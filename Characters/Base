@@ -1,0 +1,17 @@
+{
+    "name": "Base",
+    "stats": {
+        "Force": 50,
+        "Dexterit\u00e9": 50,
+        "Constitution": 50,
+        "Sagesse": 50,
+        "Agilit\u00e9": 50,
+        "Charisme": 50,
+        "Intelligence": 50,
+        "Perception": 50,
+        "Chance": 50,
+        "Survie": 50
+    },
+    "hp": 20,
+    "stamina": 100
+}

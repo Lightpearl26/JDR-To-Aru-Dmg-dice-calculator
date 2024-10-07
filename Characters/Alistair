@@ -1,0 +1,17 @@
+{
+    "name": "Alistair",
+    "stats": {
+        "Force": 95,
+        "Dexterit\u00e9": 55,
+        "Constitution": 95,
+        "Sagesse": 60,
+        "Agilit\u00e9": 50,
+        "Charisme": 30,
+        "Intelligence": 30,
+        "Perception": 20,
+        "Chance": 50,
+        "Survie": 50
+    },
+    "hp": 13,
+    "stamina": 85
+}

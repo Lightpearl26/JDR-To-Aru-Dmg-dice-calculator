@@ -1,0 +1,17 @@
+{
+    "name": "Saru",
+    "stats": {
+        "Force": 50,
+        "Dexterit\u00e9": 90,
+        "Constitution": 40,
+        "Sagesse": 60,
+        "Agilit\u00e9": 30,
+        "Charisme": 40,
+        "Intelligence": 60,
+        "Perception": 60,
+        "Chance": 55,
+        "Survie": 50
+    },
+    "hp": 20,
+    "stamina": 100
+}

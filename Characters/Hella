@@ -1,0 +1,17 @@
+{
+    "name": "Hella",
+    "stats": {
+        "Force": 70,
+        "Dexterit\u00e9": 50,
+        "Constitution": 65,
+        "Sagesse": 35,
+        "Agilit\u00e9": 60,
+        "Charisme": 50,
+        "Intelligence": 30,
+        "Perception": 50,
+        "Chance": 45,
+        "Survie": 60
+    },
+    "hp": 19,
+    "stamina": 85
+}

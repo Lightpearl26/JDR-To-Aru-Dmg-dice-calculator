@@ -1,0 +1,17 @@
+{
+    "name": "Heilari",
+    "stats": {
+        "Force": 35,
+        "Dexterit\u00e9": 75,
+        "Constitution": 45,
+        "Sagesse": 55,
+        "Agilit\u00e9": 50,
+        "Charisme": 60,
+        "Intelligence": 55,
+        "Perception": 60,
+        "Chance": 50,
+        "Survie": 50
+    },
+    "hp": 19,
+    "stamina": 100
+}
