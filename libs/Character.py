@@ -93,3 +93,6 @@ def update_character(name: str, **kwargs) -> None:
     character = load_character(name)
     if character:
         save_character({label: kwargs.get(label, character.get(label)) for label in VALID_ARGS})
+
+def get_max_health(character: dict) -> int:
+    return 10 + character["CON"]//10 + character["WIS"]//10
