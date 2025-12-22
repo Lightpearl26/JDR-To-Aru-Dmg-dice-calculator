@@ -1,0 +1,42 @@
+{
+    "name": "Alistair",
+    "stats": {
+        "str": 105,
+        "dex": 55,
+        "con": 110,
+        "wis": 100,
+        "int": 30,
+        "cha": 20,
+        "per": 20,
+        "agi": 60,
+        "luc": 30,
+        "sur": 50,
+        "stamina": 100,
+        "mental_health": 100,
+        "drug_health": 100
+    },
+    "modifiers": {
+        "hp": 0,
+        "str": 0,
+        "dex": 0,
+        "con": 0,
+        "wis": 0,
+        "int": 0,
+        "cha": 0,
+        "per": 0,
+        "agi": 0,
+        "luc": 0,
+        "sur": 0,
+        "stamina": -20,
+        "mental_health": -20,
+        "drug_health": -10
+    },
+    "spells": [
+        "Shock sphere",
+        "Thunder fist"
+    ],
+    "inventory": [
+        ["Monster", 1],
+        ["Matraque", 1]
+    ]
+}

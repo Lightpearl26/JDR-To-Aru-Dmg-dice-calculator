@@ -1,0 +1,7 @@
+{
+    "name": "Trousse a pharmacie",
+    "description": "Une trousse contenant des bandages, des antiseptiques et des médicaments de base pour soigner les blessures légères (+20 sur).",
+    "modifier": [
+        ["sur", 20]
+    ]
+}

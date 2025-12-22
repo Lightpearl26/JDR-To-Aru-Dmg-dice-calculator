@@ -1,0 +1,7 @@
+{
+    "name": "Dague de Judas",
+    "description": "Une dague sinistre imprégnée de l'énergie des traîtres. Le porteur peut comprendre et parler toute les langues (+40 cha).",
+    "modifier": [
+        ["cha", 40]
+    ]
+}

@@ -1,0 +1,7 @@
+{
+    "name": "Poing tire bouchon",
+    "description": "Un poing spécial confectionné par Hella. Se plante dans la cible et est irrecupérable. (+40 str)",
+    "modifier": [
+        ["str", 40]
+    ]
+}

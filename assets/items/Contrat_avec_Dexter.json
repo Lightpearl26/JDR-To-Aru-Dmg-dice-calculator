@@ -1,0 +1,8 @@
+{
+    "name": "Contrat avec Dexter",
+    "description": "Un contrat signé avec Dexter. (C'est en réalité une note de où Dexter a caché ses granolas.) (+20 int, -30 mental_health)",
+    "modifier": [
+        ["int", 20],
+        ["mental_health", -30]
+    ]
+}

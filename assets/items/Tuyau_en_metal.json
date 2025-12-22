@@ -1,0 +1,7 @@
+{
+    "name": "Tuyau en métal",
+    "description": "Un tuyau en métal robuste, souvent utilisé pour la plomberie ou comme arme improvisée. (+20 str)",
+    "modifier": [
+        ["str", 20]
+    ]
+}

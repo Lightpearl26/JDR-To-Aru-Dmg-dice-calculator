@@ -1,0 +1,13 @@
+{
+    "name": "Ego execution",
+    "cost": 10,
+    "description": "Blesse l'ego de la cible, lui reduisant son charisme. Son effet est doublé si la cible subit Negtiv Zone.",
+    "effects": [
+        {
+            "target": "target",
+            "target_stat": "cha",
+            "effect": "malus",
+            "formula": "5 + diceratio(user.cha, 20) - (user.int / 10) - diceratio(target.cha, 20)"
+        }
+    ]
+}

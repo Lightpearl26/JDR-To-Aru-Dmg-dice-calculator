@@ -1,0 +1,8 @@
+{
+    "name": "Arbalete poignez",
+    "description": "Une arbalète légère et maniable, idéale pour les tirs rapides et précis.",
+    "modifier": [
+        ["dex", 10],
+        ["agi", 10]
+    ]
+}

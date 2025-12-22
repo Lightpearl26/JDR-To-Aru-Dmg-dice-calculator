@@ -1,0 +1,13 @@
+{
+    "name": "Fus roh da",
+    "description": "Un puissant coup qui projette une cible en arrière.",
+    "cost": 10,
+    "effects": [
+        {
+            "target": "target",
+            "target_stat": "hp",
+            "effect": "malus",
+            "formula": "diceattack(user.int, 10, target.con, 10)"
+        }
+    ]
+}

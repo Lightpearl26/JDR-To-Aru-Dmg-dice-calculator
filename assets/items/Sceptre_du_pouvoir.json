@@ -1,0 +1,8 @@
+{
+    "name": "Sceptre du pouvoir",
+    "description": "Une relique trouvée sous la cathédrale de londres, imprégnée d'une énergie mystique ancienne (+50 int, -40 agi).",
+    "modifier": [
+        ["int", 50],
+        ["agi", -40]
+    ]
+}

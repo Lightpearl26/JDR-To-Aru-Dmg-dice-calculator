@@ -1,0 +1,45 @@
+{
+    "name": "Hella",
+    "stats": {
+        "str": 75,
+        "dex": 55,
+        "con": 70,
+        "wis": 50,
+        "int": 30,
+        "cha": 60,
+        "per": 50,
+        "agi": 60,
+        "luc": 50,
+        "sur": 80,
+        "stamina": 100,
+        "mental_health": 100,
+        "drug_health": 100
+    },
+    "modifiers": {
+        "hp": -12,
+        "str": 0,
+        "dex": 0,
+        "con": 0,
+        "wis": 0,
+        "int": 0,
+        "cha": 0,
+        "per": 0,
+        "agi": 0,
+        "luc": 0,
+        "sur": 0,
+        "stamina": -15,
+        "mental_health": -20,
+        "drug_health": 0
+    },
+    "spells": [
+        "Negativ zone",
+        "Ego execution"
+    ],
+    "inventory": [
+        ["Tuyau en metal", 1],
+        ["Monster", 1],
+        ["Bague reve bronze", 1],
+        ["Pieces S.O.Nathanaël", 1],
+        ["Contrat avec Dexter", 1]
+    ]
+}

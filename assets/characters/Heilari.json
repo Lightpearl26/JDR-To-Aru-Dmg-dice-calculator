@@ -1,0 +1,54 @@
+{
+    "name": "Heilari",
+    "stats": {
+        "str": 25,
+        "dex": 95,
+        "con": 40,
+        "wis": 65,
+        "int": 80,
+        "cha": 60,
+        "per": 50,
+        "agi": 40,
+        "luc": 50,
+        "sur": 75,
+        "stamina": 100,
+        "mental_health": 100,
+        "drug_health": 100
+    },
+    "modifiers": {
+        "hp": 0,
+        "str": 0,
+        "dex": 0,
+        "con": 0,
+        "wis": 0,
+        "int": -10,
+        "cha": 2,
+        "per": 0,
+        "agi": 30,
+        "luc": 0,
+        "sur": 0,
+        "stamina": -55,
+        "mental_health": 0,
+        "drug_health": 0
+    },
+    "spells": [
+        "Blessing area",
+        "Blessing shield",
+        "Nullify zone",
+        "Teleport",
+        "Water gun"
+    ],
+    "inventory": [
+        ["Monster", 1],
+        ["Trousse a pharmacie", 1],
+        ["Photos centre ville", 1],
+        ["Dague de Judas", 1],
+        ["Conserves", 2],
+        ["Enceinte", 1],
+        ["Talkie Walkie", 1],
+        ["Carte numerique Charles", 1],
+        ["Nokia3310", 1],
+        ["Béatrice", 1],
+        ["Barres de chocolat", 208]
+    ]
+}

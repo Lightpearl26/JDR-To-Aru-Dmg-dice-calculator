@@ -1,0 +1,7 @@
+{
+    "name": "Béatrice",
+    "description": "Lame au boût d'une chaine confectionnée par Hella. (+5 str)",
+    "modifier": [
+        ["str", 5]
+    ]
+}

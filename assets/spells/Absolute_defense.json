@@ -1,0 +1,13 @@
+{
+    "name": "Absolute defense",
+    "description": "Un bouclier d'énergie entoure le lanceur, le protégeant de toutes attaques physiques",
+    "cost": 10,
+    "effects": [
+        {
+            "target": "user",
+            "target_stat": "hp",
+            "effect": "bonus",
+            "formula": "(user.con + user.wis) / 20 + diceratio(user.int, 10)"
+        }
+    ]
+}

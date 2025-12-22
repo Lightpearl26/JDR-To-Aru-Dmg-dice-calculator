@@ -1,0 +1,7 @@
+{
+    "name": "Pièces S.O.Nathanaël",
+    "description": "Les pieces du scenarium permettant d'invoquer Nathanaël",
+    "modifier": [
+        ["wis", 1]
+    ]
+}

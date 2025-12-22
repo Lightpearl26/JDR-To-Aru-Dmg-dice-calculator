@@ -1,0 +1,45 @@
+{
+    "name": "Dexter",
+    "stats": {
+        "str": 50,
+        "dex": 70,
+        "con": 50,
+        "wis": 50,
+        "int": 150,
+        "cha": 60,
+        "per": 60,
+        "agi": 20,
+        "luc": 80,
+        "sur": 80,
+        "stamina": 100,
+        "mental_health": 100,
+        "drug_health": 100
+    },
+    "modifiers": {
+        "hp": -15,
+        "str": 0,
+        "dex": 0,
+        "con": 0,
+        "wis": 0,
+        "int": 0,
+        "cha": 0,
+        "per": 0,
+        "agi": 0,
+        "luc": 0,
+        "sur": 0,
+        "stamina": -60,
+        "mental_health": -30,
+        "drug_health": 0
+    },
+    "spells": [
+        "Railgun",
+        "Absolute defense"
+    ],
+    "inventory": [
+        ["Monster", 1],
+        ["3DS", 1],
+        ["Kinder Maxi", 1],
+        ["Ventoline", 1],
+        ["Parapluie Mickey", 1]
+    ]
+}

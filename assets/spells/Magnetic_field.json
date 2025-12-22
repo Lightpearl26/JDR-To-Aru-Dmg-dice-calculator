@@ -1,0 +1,13 @@
+{
+    "name": "Magnetic field",
+    "description": "S'entoure d'un bouclier en limaille de fer, augmentant fortement sa sagesse et déviant les projectiles.",
+    "cost": 15,
+    "effects": [
+        {
+            "target": "user",
+            "target_stat": "wis",
+            "effect": "bonus",
+            "formula": "(user.wis / 20) + diceratio(user.int, 20)"
+        }
+    ]
+}

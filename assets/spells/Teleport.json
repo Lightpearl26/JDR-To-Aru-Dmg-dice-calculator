@@ -1,0 +1,6 @@
+{
+    "name": "teleport",
+    "description": "Teleporte le lanceur",
+    "cost": 5,
+    "effects": []
+}

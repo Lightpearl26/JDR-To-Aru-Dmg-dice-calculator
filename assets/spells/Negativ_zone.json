@@ -1,0 +1,19 @@
+{
+    "name": "Negativ Zone",
+    "cost": 5,
+    "description": "Agis sur la santé mentale des personnes autour d'elle reduisant leur force en les rendant dépréssifs. Celà augmenta aussi la force de hella sur un tour.",
+    "effects": [
+        {
+            "target": "target",
+            "target_stat": "str",
+            "effect": "malus",
+            "formula": "10 + diceratio(user.int, 10) + (100 - user.mental_health) / 10"
+        },
+        {
+            "target": "user",
+            "target_stat": "str",
+            "effect": "bonus",
+            "formula": "5 + diceratio(user.int, 5) + (100 - user.mental_health) / 20"
+        }
+    ]
+}

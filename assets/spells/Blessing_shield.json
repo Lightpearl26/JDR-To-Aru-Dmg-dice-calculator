@@ -1,0 +1,13 @@
+{
+    "name": "Blessing shield",
+    "description": "Octroie un bouclier magique à un allié, augmentant sa sagesse",
+    "cost": 10,
+    "effects": [
+        {
+            "target": "target",
+            "target_stat": "wis",
+            "effect": "bonus",
+            "formula": "10 + diceratio(user.int, 20)"
+        }
+    ]
+}

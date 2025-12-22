@@ -1,0 +1,13 @@
+{
+    "name": "Brandon Enflamme",
+    "description": "Lance une boule de feu enflammée sur un ennemi.",
+    "cost": 10,
+    "effects": [
+        {
+            "target": "target",
+            "target_stat": "hp",
+            "effect": "malus",
+            "formula": "10 + diceratio(user.int, 10) - diceratio(target.wis, 10)"
+        }
+    ]
+}

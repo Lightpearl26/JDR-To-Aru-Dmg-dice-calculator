@@ -1,0 +1,13 @@
+{
+    "name": "Thunder Fist",
+    "description": "Inflige des dégâts physiques basés sur la force et l'intelligence, parable avec constitution. Jet de sagesse pour la paralysie à gérer par le MJ.",
+    "cost": 10,
+    "effects": [
+        {
+            "target": "target",
+            "target_stat": "hp",
+            "effect": "malus",
+            "formula": "diceratio(user.str, 10) + diceratio(user.int, 10) - diceratio(target.con, 10)"
+        }
+    ]
+}

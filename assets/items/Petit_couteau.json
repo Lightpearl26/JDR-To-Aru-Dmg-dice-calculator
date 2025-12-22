@@ -1,0 +1,7 @@
+{
+    "name": "Petit couteau",
+    "description": "Un petit couteau (+5 Force)",
+    "modifier": [
+        ["str", 5]
+    ]
+}

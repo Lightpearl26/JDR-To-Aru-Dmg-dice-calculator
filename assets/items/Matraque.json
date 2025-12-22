@@ -1,0 +1,7 @@
+{
+    "name": "Matraque",
+    "description": "Une matraque en métal renforcé. Augmente la force de l'utilisateur. (+15 str)",
+    "modifier": [
+        ["str", 15]
+    ]
+}

@@ -1,0 +1,13 @@
+{
+    "name": "Blessing area",
+    "description": "Bénit une zone, soigne les alliés dans la zone",
+    "cost": 10,
+    "effects": [
+        {
+            "target": "target",
+            "target_stat": "hp",
+            "effect": "bonus",
+            "formula": "5 + (user.hp / 10) + diceratio(user.sur, 2)"
+        }
+    ]
+}
