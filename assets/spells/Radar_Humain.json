@@ -1,0 +1,6 @@
+{
+    "name": "Radar Humain",
+    "description": "Detecte si il peu se faire atteindre ce tour ci",
+    "cost": 5,
+    "effects": []
+}

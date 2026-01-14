@@ -1,0 +1,35 @@
+{
+    "name": "Skillout Captain",
+    "stats": {
+        "str": 70,
+        "dex": 40,
+        "con": 80,
+        "wis": 20,
+        "int": 20,
+        "cha": 70,
+        "per": 50,
+        "agi": 50,
+        "luc": 60,
+        "sur": 60,
+        "stamina": 100,
+        "mental_health": 100,
+        "drug_health": 100
+    },
+    "modifiers": {
+        "hp": 0,
+        "str": 0,
+        "dex": 0,
+        "con": 0,
+        "wis": 0,
+        "int": 0,
+        "cha": 0,
+        "per": 0,
+        "agi": 0,
+        "luc": 0,
+        "sur": 0,
+        "stamina": 0,
+        "mental_health": 0,
+        "drug_health": 0
+    },
+    "spells": []
+}

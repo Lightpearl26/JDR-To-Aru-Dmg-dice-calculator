@@ -1,0 +1,35 @@
+{
+    "name": "Skillout Sbire",
+    "stats": {
+        "str": 60,
+        "dex": 70,
+        "con": 60,
+        "wis": 20,
+        "int": 20,
+        "cha": 40,
+        "per": 50,
+        "agi": 50,
+        "luc": 50,
+        "sur": 70,
+        "stamina": 100,
+        "mental_health": 100,
+        "drug_health": 100
+    },
+    "modifiers": {
+        "hp": 0,
+        "str": 0,
+        "dex": 0,
+        "con": 0,
+        "wis": 0,
+        "int": 0,
+        "cha": 0,
+        "per": 0,
+        "agi": 0,
+        "luc": 0,
+        "sur": 0,
+        "stamina": 0,
+        "mental_health": 0,
+        "drug_health": 0
+    },
+    "spells": []
+}

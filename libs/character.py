@@ -455,7 +455,11 @@ class Character:
             logger.debug(f"[Character] <'{self.name}'> Spell '{spell_name}' not known.")
             return
         
-        spell.cast(self, target, user_dices, target_dices)
+        u_dices = {stat: Dice("1d100", [value]) for stat, value in user_dices.items()} if user_dices else None
+        t_dices = {stat: Dice("1d100", [value]) for stat, value in target_dices.items()} if target_dices else None
+        logger.debug(f"[Character] <'{self.name}'> Casting spell '{spell_name}' on <'{target.name}'>.")
+        
+        spell.cast(self, target, u_dices, t_dices)
 
     def learn_spell(self, spell_name: Spell) -> None:
         """
@@ -499,7 +503,7 @@ class Character:
             0 if user_dices.critical_failure and not target_dices.critical_failure else
             6 if user_dices.critical_success and target_dices.critical_success else
             12 if user_dices.critical_success and target_dices.critical_failure else
-            8 if user_dices.critical_success else
+            8 if user_dices.critical_success or target_dices.critical_failure else
             4
         )
         logger.debug(f"[Character] <'{self.name}'> Strike on <'{target.name}'>: " \
@@ -537,7 +541,7 @@ class Character:
             0 if user_dices.critical_failure and not target_dices.critical_failure else
             6 if user_dices.critical_success and target_dices.critical_success else
             12 if user_dices.critical_success and target_dices.critical_failure else
-            8 if user_dices.critical_success else
+            8 if user_dices.critical_success or target_dices.critical_failure else
             4
         )
         logger.debug(f"[Character] <'{self.name}'> Shoot on <'{target.name}'>: " \

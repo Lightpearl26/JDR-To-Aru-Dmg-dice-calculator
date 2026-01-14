@@ -1,0 +1,13 @@
+{
+    "name": "AntiMatter Blast",
+    "description": "Lance une boule d'antimatière qui décompose ce qu'elle touche, infligeant des dégâts considérables.",
+    "cost": 20,
+    "effects": [
+        {
+            "target": "target",
+            "target_stat": "hp",
+            "effect": "malus",
+            "formula": "diceratio(user.int, 10) - diceratio(target.wis, 5)"
+        }
+    ]
+}

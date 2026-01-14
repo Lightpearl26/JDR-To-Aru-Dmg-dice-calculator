@@ -1,0 +1,13 @@
+{
+    "name": "Void Meteor",
+    "description": "Lance une météore du vide qui inflige des dégâts massifs à une cible.",
+    "cost": 10,
+    "effects": [
+        {
+            "target": "target",
+            "target_stat": "hp",
+            "effect": "malus",
+            "formula": "diceratio(user.int, 10) - diceratio(target.wis, 20)"
+        }
+    ]
+}

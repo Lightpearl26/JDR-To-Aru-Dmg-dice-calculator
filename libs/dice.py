@@ -46,9 +46,9 @@ class Dice:
         # get the dice type
         dice_type = int(self.cmd.split('d')[1])
 
-        # check if any dice value is under or over 20% of the dice type
+        # check if any dice value is under or over 5% of the dice type
         for value in self.dices_values:
-            if value <= dice_type * 0.2:
+            if value-1 <= dice_type * 0.05:
                 return True
         return False
 
@@ -63,9 +63,9 @@ class Dice:
         # get the dice type
         dice_type = int(self.cmd.split('d')[1])
 
-        # check if any dice value is over 80% of the dice type
+        # check if any dice value is over 95% of the dice type
         for value in self.dices_values:
-            if value >= dice_type * 0.8:
+            if value >= dice_type * 0.95:
                 return True
         return False
 

@@ -1,0 +1,35 @@
+{
+    "name": "Charles",
+    "stats": {
+        "str": 20,
+        "dex": 60,
+        "con": 50,
+        "wis": 70,
+        "int": 80,
+        "cha": 70,
+        "per": 50,
+        "agi": 50,
+        "luc": 10,
+        "sur": 50,
+        "stamina": 100,
+        "mental_health": 100,
+        "drug_health": 100
+    },
+    "modifiers": {
+        "hp": 0,
+        "str": 0,
+        "dex": 0,
+        "con": 0,
+        "wis": 0,
+        "int": 0,
+        "cha": 0,
+        "per": 0,
+        "agi": 0,
+        "luc": 0,
+        "sur": 0,
+        "stamina": 0,
+        "mental_health": 0,
+        "drug_health": 0
+    },
+    "spells": []
+}

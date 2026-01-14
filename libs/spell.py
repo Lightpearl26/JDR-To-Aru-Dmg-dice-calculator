@@ -142,9 +142,9 @@ class Formula:
                 ratio = int(args[1])
                 dice_value = None
                 if who == "user" and user_dices:
-                    dice_value = Dice("", user_dices.get(stat))
+                    dice_value = user_dices.get(stat)
                 elif who == "target" and target_dices:
-                    dice_value = Dice("", target_dices.get(stat))
+                    dice_value = target_dices.get(stat)
                 if who == "user":
                     value = DiceRatio(stat, ratio).resolve(user, dice_value)
                 elif who == "target":

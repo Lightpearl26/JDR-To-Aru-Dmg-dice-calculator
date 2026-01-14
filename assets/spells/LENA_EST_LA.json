@@ -1,0 +1,19 @@
+{
+    "name": "LENA EST LA",
+    "description": "Elle entre dans l'esprit de sa cible pour l'embrouiller baissant sa perception et sa sagesse",
+    "cost": 10,
+    "effects": [
+        {
+            "target": "target",
+            "target_stat": "per",
+            "effect": "malus",
+            "formula": "user.int / 10 + diceratio(user.wis, 20)"
+        },
+        {
+            "target": "target",
+            "target_stat": "wis",
+            "effect": "malus",
+            "formula": "user.int / 10 + diceratio(user.wis, 20)"
+        }
+    ]
+}
