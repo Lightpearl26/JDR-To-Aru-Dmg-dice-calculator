@@ -75,6 +75,7 @@ class Inventory:
     """
     def __init__(self, items: dict[str, int]) -> None:
         self.items: dict[str, int] = items
+        self._item_cache: dict[str, Item] = {}
         logger.debug(f"[Inventory] Inventory created with items: {self.items}")
 
     def add_item(self, item_name: str) -> None:
@@ -100,6 +101,7 @@ class Inventory:
                 self.items[item_name] -= 1
             else:
                 del self.items[item_name]
+                self._item_cache.pop(item_name, None)
 
     def get_stat_modifier(self, stat: str) -> int:
         """
@@ -113,7 +115,14 @@ class Inventory:
         """
         total_modifier = 0
         for item_name, quantity in self.items.items():
-            item = Item.from_name(item_name)
+            item = self._item_cache.get(item_name)
+            if item is None:
+                try:
+                    item = Item.from_name(item_name)
+                    self._item_cache[item_name] = item
+                except (FileNotFoundError, OSError, ValueError) as error:
+                    logger.error(f"[Inventory] Failed to load item '{item_name}': {error}")
+                    continue
             if item:
                 for mod_stat, mod_value in item.modifier:
                     if mod_stat == stat:

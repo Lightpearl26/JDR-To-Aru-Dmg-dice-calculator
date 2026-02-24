@@ -8,9 +8,9 @@ JDR spell libs
 # Import external libs
 from __future__ import annotations
 from typing import TYPE_CHECKING, Optional
+from ast import Expression, BinOp, UnaryOp, Constant, Add, Sub, Mult, Div, USub, UAdd, parse
 from re import match
 from os.path import join
-from os import listdir
 from json import load
 
 # Import logger
@@ -24,8 +24,38 @@ from .dice import Dice, DiceRatio, DiceAttack
 if TYPE_CHECKING:
     from .character import Character
 
-# Constants
-SPELLS_NAMES: list[str] = [f[:-5].replace('_', ' ') for f in listdir(config.SPELLS_FOLDER) if f.endswith('.json')]
+
+def _safe_eval_expression(expr: str) -> int:
+    """
+    Evaluate a simple arithmetic expression safely.
+
+    Allowed operations: +, -, *, /
+    """
+    tree = parse(expr, mode="eval")
+
+    def _eval(node):
+        if isinstance(node, Expression):
+            return _eval(node.body)
+        if isinstance(node, Constant) and isinstance(node.value, (int, float)):
+            return node.value
+        if isinstance(node, UnaryOp) and isinstance(node.op, (USub, UAdd)):
+            value = _eval(node.operand)
+            return -value if isinstance(node.op, USub) else value
+        if isinstance(node, BinOp) and isinstance(node.op, (Add, Sub, Mult, Div)):
+            left = _eval(node.left)
+            right = _eval(node.right)
+            if isinstance(node.op, Add):
+                return left + right
+            if isinstance(node.op, Sub):
+                return left - right
+            if isinstance(node.op, Mult):
+                return left * right
+            if right == 0:
+                raise ZeroDivisionError("division by zero")
+            return left / right
+        raise ValueError(f"Unsupported expression node: {type(node).__name__}")
+
+    return int(_eval(tree))
 
 # - smart_split function
 def smart_split(expr: str) -> list[str]:
@@ -161,9 +191,9 @@ class Formula:
             else:
                 values.append(0)
         try:
-            result = eval(self.template.format(*values), {"__builtins__": None})
-        except Exception as e:
-            print(e)
+            result = _safe_eval_expression(self.template.format(*values))
+        except (ValueError, ZeroDivisionError, SyntaxError, TypeError) as error:
+            logger.error(f"[Formula] Failed to evaluate formula '{self.cmd}': {error}")
             result = 0
         logger.debug(f"[Formula] Evaluated formula '{self.cmd}' with values {values} to result {result}.")
         return result
@@ -333,9 +363,3 @@ class Spell:
         
         return "\n".join(effect_logs) if effect_logs else "Aucun effet"
 
-
-# - Load all spells
-SPELLS: dict[str, Spell] = {
-    spell_name: Spell.from_name(spell_name)
-    for spell_name in SPELLS_NAMES
-}

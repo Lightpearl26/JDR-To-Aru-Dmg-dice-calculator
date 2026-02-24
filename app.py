@@ -35,8 +35,8 @@ class SearchablePopup(Popup):
     """
     Custom Popup that tracks TextArea search changes and calls callbacks.
     """
-    def __init__(self, app, surface, rect, title: str = ""):
-        super().__init__(app, surface, rect, title)
+    def __init__(self, ui_app, surface, rect, title: str = ""):
+        super().__init__(ui_app, surface, rect, title)
         self.search_callbacks: dict[TextArea, Callable[[], None]] = {}
         self.search_texts: dict[TextArea, str] = {}
     
@@ -196,7 +196,7 @@ class App(UIApp):
             for char in matched_chars:
                 # Create card with proper sizing
                 card_width = 140
-                card = CharacterCardWidget(
+                CharacterCardWidget(
                     attacker_list_frame,
                     Rect(10, y, card_width, 100),
                     character=char,
@@ -300,7 +300,7 @@ class App(UIApp):
             matched_chars = [c for c in all_chars if search_filter.lower() in c.name.lower()]
             
             for char in matched_chars:
-                card = CharacterCardWidget(
+                CharacterCardWidget(
                     target_list_frame,
                     Rect(0, y, 160, 110),
                     character=char,
@@ -430,7 +430,7 @@ class App(UIApp):
             y = 10
             card_width = 140
             for char in matched_chars:
-                card = CharacterCardWidget(
+                CharacterCardWidget(
                     shooter_list_frame,
                     Rect(10, y, card_width, 100),
                     character=char,
@@ -539,7 +539,7 @@ class App(UIApp):
             y = 10
             card_width = 140
             for char in matched_chars:
-                card = CharacterCardWidget(
+                CharacterCardWidget(
                     target_list_frame,
                     Rect(10, y, card_width, 100),
                     character=char,
@@ -647,7 +647,6 @@ class App(UIApp):
         caster_search.editable = True
         
         caster_list_frame = Frame(popup, Rect(20, 80, 160, 350))
-        caster_search_text = [""]
         
         selected_caster_label = Label(popup, (20, 440), f"Lanceur: {selected_caster[0]}")
         
@@ -660,7 +659,7 @@ class App(UIApp):
             y = 10
             card_width = 140
             for char in matched_casters:
-                card = CharacterCardWidget(
+                CharacterCardWidget(
                     caster_list_frame,
                     Rect(10, y, card_width, 100),
                     character=char,
@@ -847,7 +846,7 @@ class App(UIApp):
             y = 10
             card_width = 140
             for char in matched_targets:
-                card = CharacterCardWidget(
+                CharacterCardWidget(
                     target_list_frame,
                     Rect(10, y, card_width, 100),
                     character=char,
@@ -1073,5 +1072,5 @@ class App(UIApp):
 
 if __name__ == "__main__":
     init()
-    app = App()
-    app.run()
+    application = App()
+    application.run()

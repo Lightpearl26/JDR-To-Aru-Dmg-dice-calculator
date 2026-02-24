@@ -11,6 +11,7 @@ from pygame import Rect
 
 from ..pygame_ui import Frame, UIWidget, Label, Button, TextArea
 from ..character_card_widget import CharacterCardWidget
+from ... import logger
 
 if TYPE_CHECKING:
     from ...session_manager import SessionManager
@@ -59,7 +60,6 @@ class SessionPanel(Frame):
     def _build_ui(self) -> None:
         """Initialize UI"""
         margin = 15
-        spacing = 10
         
         # Left side - Current Party
         party_width = (self.rect.width - margin * 3) // 2
@@ -139,14 +139,14 @@ class SessionPanel(Frame):
         y_offset = 10
         
         for char in filtered_chars:
-            card = CharacterCardWidget(
+            CharacterCardWidget(
                 self.party_frame,
                 Rect(10, y_offset, card_width, card_height),
                 character=char
             )
             
             # Add Remove button
-            remove_btn = Button(
+            Button(
                 self.party_frame,
                 Rect(card_width - 80, y_offset + card_height + 5, 70, 30),
                 "Retirer",
@@ -185,7 +185,7 @@ class SessionPanel(Frame):
         y_offset = 10
         
         for char in filtered_chars:
-            card = CharacterCardWidget(
+            CharacterCardWidget(
                 self.all_chars_frame,
                 Rect(10, y_offset, card_width, card_height),
                 character=char
@@ -193,7 +193,7 @@ class SessionPanel(Frame):
             
             # Add "Add to Party" button if not already in party
             if char.name not in party_names:
-                add_btn = Button(
+                Button(
                     self.all_chars_frame,
                     Rect(card_width - 80, y_offset + card_height + 5, 70, 30),
                     "Ajouter",
@@ -213,21 +213,21 @@ class SessionPanel(Frame):
         """Add a character to the party."""
         try:
             self.session_manager.add_to_party(char_name)
-            print(f"Added {char_name} to party")
+            logger.info(f"Added {char_name} to party")
             self._refresh_party(self.party_search_input.text if self.party_search_input else "")
             self._refresh_all_characters(self.search_input.text if self.search_input else "")
-        except Exception as e:
-            print(f"Error adding character to party: {e}")
+        except (ValueError, KeyError, RuntimeError, OSError) as error:
+            logger.error(f"Error adding character to party '{char_name}': {error}")
     
     def _remove_from_party(self, char_name: str) -> None:
         """Remove a character from the party."""
         try:
             self.session_manager.remove_from_party(char_name)
-            print(f"Removed {char_name} from party")
+            logger.info(f"Removed {char_name} from party")
             self._refresh_party(self.party_search_input.text if self.party_search_input else "")
             self._refresh_all_characters(self.search_input.text if self.search_input else "")
-        except Exception as e:
-            print(f"Error removing character from party: {e}")
+        except (ValueError, KeyError, RuntimeError, OSError) as error:
+            logger.error(f"Error removing character from party '{char_name}': {error}")
     
     def handle_event(self, event) -> bool:
         if not self.displayed:

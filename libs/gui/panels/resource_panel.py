@@ -17,6 +17,7 @@ from ..item_card_widget import ItemCardWidget
 from ..spell_card_widget import SpellCardWidget
 from ..character_summary_widget import CharacterSummaryWidget
 from ...config import CHARACTERS_FOLDER, ITEMS_FOLDER, SPELLS_FOLDER
+from ... import logger
 
 if TYPE_CHECKING:
     from libs.session_manager import SessionManager
@@ -216,8 +217,8 @@ class ResourcePanel(Frame):
                         char_data = json.load(f)
                     self.character_summary.set_character_data(char_data)
                     self.character_summary.displayed = True
-            except Exception as e:
-                print(f"Error loading character {selected_name}: {e}")
+            except (FileNotFoundError, OSError, ValueError, json.JSONDecodeError) as error:
+                logger.error(f"Error loading character '{selected_name}': {error}")
         
         # Show ItemCard for Items
         elif self.current_type == "Items" and self.item_card:
@@ -228,8 +229,8 @@ class ResourcePanel(Frame):
                     card_height = self.item_card.get_required_height(self.item_card.rect.width)
                     self.item_card.rect.height = card_height
                     self.item_card.displayed = True
-            except Exception as e:
-                print(f"Error loading item {selected_name}: {e}")
+            except (FileNotFoundError, OSError, ValueError) as error:
+                logger.error(f"Error loading item '{selected_name}': {error}")
         
         # Show SpellCard for Spells
         elif self.current_type == "Spells" and self.spell_card:
@@ -240,8 +241,8 @@ class ResourcePanel(Frame):
                     card_height = self.spell_card.get_required_height(self.spell_card.rect.width)
                     self.spell_card.rect.height = card_height
                     self.spell_card.displayed = True
-            except Exception as e:
-                print(f"Error loading spell {selected_name}: {e}")
+            except (FileNotFoundError, OSError, ValueError) as error:
+                logger.error(f"Error loading spell '{selected_name}': {error}")
     
     def handle_event(self, event) -> bool:
         if not self.displayed:
@@ -281,7 +282,7 @@ class ResourcePanel(Frame):
     def _on_modify(self) -> None:
         """Handle Modify button click."""
         if not self.resource_list or not self.resource_list.selected_text:
-            print("No resource selected")
+            logger.warning("No resource selected for modification")
             return
         
         if self.current_type == "Items":
@@ -304,10 +305,10 @@ class ResourcePanel(Frame):
         try:
             item = self.resource_manager.load_item(selected_name)
             if not item:
-                print(f"Error: Could not load item {selected_name}")
+                logger.error(f"Could not load item '{selected_name}'")
                 return
-        except Exception as e:
-            print(f"Error loading item {selected_name}: {e}")
+        except (FileNotFoundError, OSError, ValueError) as error:
+            logger.error(f"Error loading item '{selected_name}': {error}")
             return
         
         # Available stats for modifiers
@@ -411,7 +412,7 @@ class ResourcePanel(Frame):
             try:
                 val_text = value_input.text.strip()
                 if not val_text:
-                    print("Error: Value is required")
+                    logger.warning("Modifier value is required")
                     return
                 
                 value = int(val_text)
@@ -420,10 +421,10 @@ class ResourcePanel(Frame):
                 modifiers.append([stat, value])
                 value_input.text = ""  # Clear input
                 refresh_modifier_display()
-                print(f"Added modifier: {stat} {value:+d}")
+                logger.info(f"Added modifier: {stat} {value:+d}")
                 
             except ValueError:
-                print("Error: Value must be a number")
+                logger.warning("Modifier value must be a number")
         
         # Add Modifier button
         Button(
@@ -447,7 +448,7 @@ class ResourcePanel(Frame):
             description = desc_input.text.strip()
             
             if not new_name:
-                print("Error: Item name is required")
+                logger.warning("Item name is required")
                 return
             
             # Get old and new file paths
@@ -456,7 +457,7 @@ class ResourcePanel(Frame):
             
             # Check if new name conflicts with another item
             if new_name != selected_name and new_file.exists():
-                print(f"Error: Item '{new_name}' already exists")
+                logger.warning(f"Item '{new_name}' already exists")
                 return
             
             # Create item data
@@ -478,17 +479,17 @@ class ResourcePanel(Frame):
                 with open(new_file, "w", encoding="utf-8") as f:
                     json.dump(item_data, f, indent=4, ensure_ascii=False)
                 
-                print(f"Item modified: {new_name}")
+                logger.info(f"Item modified: {new_name}")
                 if modifiers:
-                    print(f"  with {len(modifiers)} modifier(s)")
+                    logger.info(f"Item '{new_name}' has {len(modifiers)} modifier(s)")
                 
                 # Reload resources and refresh list
                 self.resource_manager.reload()
                 self._refresh_resource_list()
                 
                 popup.close()
-            except Exception as e:
-                print(f"Error saving item: {e}")
+            except (FileNotFoundError, OSError, ValueError, json.JSONDecodeError) as error:
+                logger.error(f"Error saving item '{new_name}': {error}")
         
         def on_cancel():
             popup.close()
@@ -625,7 +626,7 @@ class ResourcePanel(Frame):
             try:
                 val_text = value_input.text.strip()
                 if not val_text:
-                    print("Error: Value is required")
+                    logger.warning("Modifier value is required")
                     return
                 
                 value = int(val_text)
@@ -634,10 +635,10 @@ class ResourcePanel(Frame):
                 modifiers.append([stat, value])
                 value_input.text = ""  # Clear input
                 refresh_modifier_display()
-                print(f"Added modifier: {stat} {value:+d}")
+                logger.info(f"Added modifier: {stat} {value:+d}")
                 
             except ValueError:
-                print("Error: Value must be a number")
+                logger.warning("Modifier value must be a number")
         
         # Add Modifier button
         Button(
@@ -658,13 +659,13 @@ class ResourcePanel(Frame):
             description = desc_input.text.strip()
             
             if not name:
-                print("Error: Item name is required")
+                logger.warning("Item name is required")
                 return
             
             # Check if item already exists
             item_file = Path(ITEMS_FOLDER) / f"{name}.json"
             if item_file.exists():
-                print(f"Error: Item '{name}' already exists")
+                logger.warning(f"Item '{name}' already exists")
                 return
             
             # Create item data
@@ -682,17 +683,17 @@ class ResourcePanel(Frame):
                 with open(item_file, "w", encoding="utf-8") as f:
                     json.dump(item_data, f, indent=4, ensure_ascii=False)
                 
-                print(f"Item created: {name}")
+                logger.info(f"Item created: {name}")
                 if modifiers:
-                    print(f"  with {len(modifiers)} modifier(s)")
+                    logger.info(f"Item '{name}' has {len(modifiers)} modifier(s)")
                 
                 # Reload resources and refresh list
                 self.resource_manager.reload()
                 self._refresh_resource_list()
                 
                 popup.close()
-            except Exception as e:
-                print(f"Error saving item: {e}")
+            except (FileNotFoundError, OSError, ValueError, json.JSONDecodeError) as error:
+                logger.error(f"Error saving item '{name}': {error}")
         
         def on_cancel():
             popup.close()
@@ -728,11 +729,11 @@ class ResourcePanel(Frame):
         """Handle Load button click. Only works for Characters."""
         # Only allow loading characters
         if self.current_type != "Characters":
-            print("Load only works for Characters")
+            logger.warning("Load only works for Characters")
             return
         
         if not self.resource_list or not self.resource_list.selected_text:
-            print("No character selected")
+            logger.warning("No character selected")
             return
         
         selected_name = self.resource_list.selected_text
@@ -744,7 +745,7 @@ class ResourcePanel(Frame):
         
         # Check if name already exists in session
         if self.session_manager.get_character(new_name):
-            print(f"Character '{new_name}' already loaded in session, update it instead")
+            logger.warning(f"Character '{new_name}' already loaded in session, update it instead")
             self._update_character(new_name)
             return
         
@@ -755,9 +756,9 @@ class ResourcePanel(Frame):
             character.name = new_name
             # Add to session
             self.session_manager.load_character(character)
-            print(f"Loaded character copy: {new_name} (from {selected_name})")
-        except Exception as e:
-            print(f"Error loading {selected_name}: {e}")
+            logger.info(f"Loaded character copy: {new_name} (from {selected_name})")
+        except (FileNotFoundError, OSError, ValueError, json.JSONDecodeError) as error:
+            logger.error(f"Error loading '{selected_name}': {error}")
 
     def _update_character(self, name: str) -> None:
         """
@@ -770,7 +771,7 @@ class ResourcePanel(Frame):
             # Load character data from resource
             char_path = Path(CHARACTERS_FOLDER) / f"{name}.json"
             if not char_path.exists():
-                print(f"Character file not found: {char_path}")
+                logger.warning(f"Character file not found: {char_path}")
                 return
             
             with open(char_path, 'r', encoding='utf-8') as f:
@@ -779,17 +780,17 @@ class ResourcePanel(Frame):
             # Create Character object from data
             character = self.session_manager.get_character(name)
             if not character:
-                print(f"Character '{name}' not found in session")
+                logger.warning(f"Character '{name}' not found in session")
                 return
             
             # Update character attributes (this is a simple example, you may want to be more selective)
             for key, value in char_data.items():
                 setattr(character, key, value)
             
-            print(f"Updated character '{name}' with latest resource data")
+            logger.info(f"Updated character '{name}' with latest resource data")
         
-        except Exception as e:
-            print(f"Error updating character '{name}': {e}")
+        except (FileNotFoundError, OSError, ValueError, json.JSONDecodeError, AttributeError) as error:
+            logger.error(f"Error updating character '{name}': {error}")
     
     def _ask_for_name(self, title: str) -> str:
         """
@@ -873,7 +874,7 @@ class ResourcePanel(Frame):
     def _on_remove(self) -> None:
         """Handle Remove button click."""
         if not self.resource_list or not self.resource_list.selected_text:
-            print("No resource selected")
+            logger.warning("No resource selected")
             return
         
         selected_name = self.resource_list.selected_text
@@ -885,20 +886,20 @@ class ResourcePanel(Frame):
         # Get the file path
         file_path = self._get_resource_file_path(selected_name)
         if not file_path or not file_path.exists():
-            print(f"File not found: {file_path}")
+            logger.warning(f"File not found: {file_path}")
             return
         
         try:
             # Delete the file
             file_path.unlink()
-            print(f"Deleted {self.current_type}: {selected_name}")
+            logger.info(f"Deleted {self.current_type}: {selected_name}")
             
             # Reload resource manager and refresh list
             self.resource_manager.reload()
             self._refresh_resource_list()
             
-        except Exception as e:
-            print(f"Error deleting {selected_name}: {e}")
+        except (FileNotFoundError, OSError, PermissionError) as error:
+            logger.error(f"Error deleting '{selected_name}': {error}")
     
     def _get_resource_file_path(self, name: str) -> Path:
         """
@@ -1112,7 +1113,7 @@ class ResourcePanel(Frame):
             """Add an effect to the list."""
             formula = formula_input.text.strip()
             if not formula:
-                print("Error: Formula is required")
+                logger.warning("Formula is required")
                 return
             
             effect_data = {
@@ -1125,7 +1126,7 @@ class ResourcePanel(Frame):
             effects.append(effect_data)
             formula_input.text = ""
             refresh_effects_display()
-            print(f"Added effect: {effect_data['target']}.{effect_data['target_stat']} {effect_data['effect']}")
+            logger.info(f"Added effect: {effect_data['target']}.{effect_data['target_stat']} {effect_data['effect']}")
         
         Button(
             popup,
@@ -1144,22 +1145,22 @@ class ResourcePanel(Frame):
             cost_text = cost_input.text.strip()
             
             if not name:
-                print("Error: Spell name is required")
+                logger.warning("Spell name is required")
                 return
             
             try:
                 cost = int(cost_text) if cost_text else 0
             except ValueError:
-                print("Error: Cost must be a number")
+                logger.warning("Spell cost must be a number")
                 return
             
             if not effects:
-                print("Error: At least one effect is required")
+                logger.warning("At least one spell effect is required")
                 return
             
             spell_file = Path(SPELLS_FOLDER) / f"{name}.json"
             if spell_file.exists():
-                print(f"Error: Spell '{name}' already exists")
+                logger.warning(f"Spell '{name}' already exists")
                 return
             
             spell_data = {
@@ -1173,15 +1174,15 @@ class ResourcePanel(Frame):
                 with open(spell_file, "w", encoding="utf-8") as f:
                     json.dump(spell_data, f, indent=4, ensure_ascii=False)
                 
-                print(f"Spell created: {name}")
-                print(f"  with {len(effects)} effect(s)")
+                logger.info(f"Spell created: {name}")
+                logger.info(f"Spell '{name}' has {len(effects)} effect(s)")
                 
                 self.resource_manager.reload()
                 self._refresh_resource_list()
                 
                 popup.close()
-            except Exception as e:
-                print(f"Error saving spell: {e}")
+            except (FileNotFoundError, OSError, ValueError, json.JSONDecodeError) as error:
+                logger.error(f"Error saving spell '{name}': {error}")
         
         def on_cancel():
             popup.close()
@@ -1221,10 +1222,10 @@ class ResourcePanel(Frame):
         try:
             spell = self.resource_manager.load_spell(selected_name)
             if not spell:
-                print(f"Error: Could not load spell {selected_name}")
+                logger.error(f"Could not load spell '{selected_name}'")
                 return
-        except Exception as e:
-            print(f"Error loading spell {selected_name}: {e}")
+        except (FileNotFoundError, OSError, ValueError, json.JSONDecodeError) as error:
+            logger.error(f"Error loading spell '{selected_name}': {error}")
             return
         
         # Available stats and targets
@@ -1351,7 +1352,7 @@ class ResourcePanel(Frame):
         def on_add_effect():
             formula = formula_input.text.strip()
             if not formula:
-                print("Error: Formula is required")
+                logger.warning("Formula is required")
                 return
             
             effect_data = {
@@ -1364,7 +1365,7 @@ class ResourcePanel(Frame):
             effects.append(effect_data)
             formula_input.text = ""
             refresh_effects_display()
-            print(f"Added effect: {effect_data['target']}.{effect_data['target_stat']} {effect_data['effect']}")
+            logger.info(f"Added effect: {effect_data['target']}.{effect_data['target_stat']} {effect_data['effect']}")
         
         Button(
             popup,
@@ -1384,24 +1385,24 @@ class ResourcePanel(Frame):
             cost_text = cost_input.text.strip()
             
             if not new_name:
-                print("Error: Spell name is required")
+                logger.warning("Spell name is required")
                 return
             
             try:
                 cost = int(cost_text) if cost_text else 0
             except ValueError:
-                print("Error: Cost must be a number")
+                logger.warning("Spell cost must be a number")
                 return
             
             if not effects:
-                print("Error: At least one effect is required")
+                logger.warning("At least one spell effect is required")
                 return
             
             old_file = Path(SPELLS_FOLDER) / f"{selected_name}.json"
             new_file = Path(SPELLS_FOLDER) / f"{new_name}.json"
             
             if new_name != selected_name and new_file.exists():
-                print(f"Error: Spell '{new_name}' already exists")
+                logger.warning(f"Spell '{new_name}' already exists")
                 return
             
             spell_data = {
@@ -1418,15 +1419,15 @@ class ResourcePanel(Frame):
                 with open(new_file, "w", encoding="utf-8") as f:
                     json.dump(spell_data, f, indent=4, ensure_ascii=False)
                 
-                print(f"Spell modified: {new_name}")
-                print(f"  with {len(effects)} effect(s)")
+                logger.info(f"Spell modified: {new_name}")
+                logger.info(f"Spell '{new_name}' has {len(effects)} effect(s)")
                 
                 self.resource_manager.reload()
                 self._refresh_resource_list()
                 
                 popup.close()
-            except Exception as e:
-                print(f"Error saving spell: {e}")
+            except (FileNotFoundError, OSError, ValueError, json.JSONDecodeError) as error:
+                logger.error(f"Error saving spell '{new_name}': {error}")
         
         def on_cancel():
             popup.close()
@@ -1639,7 +1640,7 @@ class ResourcePanel(Frame):
                     quantity_input.text = "1"
                     refresh_inventory_display()
             except ValueError:
-                print("Error: Quantity must be a valid number")
+                logger.warning("Quantity must be a valid number")
         
         Button(popup, Rect(550, inventory_y + 35, 90, 25), "Add Item", on_add_item)
         
@@ -1652,13 +1653,13 @@ class ResourcePanel(Frame):
             name = name_input.text.strip().replace(" ", "_")
             
             if not name:
-                print("Error: Character name is required")
+                logger.warning("Character name is required")
                 return
             
             # Check if character already exists
             char_file = Path(CHARACTERS_FOLDER) / f"{name}.json"
             if char_file.exists():
-                print(f"Error: Character '{name}' already exists")
+                logger.warning(f"Character '{name}' already exists")
                 return
             
             # Collect stats
@@ -1667,7 +1668,7 @@ class ResourcePanel(Frame):
                 try:
                     stats[stat] = int(input_field.text.strip())
                 except ValueError:
-                    print(f"Error: {stat} must be a valid number")
+                    logger.warning(f"{stat} must be a valid number")
                     return
             
             # Add auto-initialized stats
@@ -1710,15 +1711,15 @@ class ResourcePanel(Frame):
                 with open(char_file, "w", encoding="utf-8") as f:
                     json.dump(char_data, f, indent=4, ensure_ascii=False)
                 
-                print(f"Character created: {name}")
+                logger.info(f"Character created: {name}")
                 
                 # Reload resources and refresh list
                 self.resource_manager.reload()
                 self._refresh_resource_list()
                 
                 popup.close()
-            except Exception as e:
-                print(f"Error saving character: {e}")
+            except (FileNotFoundError, OSError, ValueError, json.JSONDecodeError) as error:
+                logger.error(f"Error saving character '{name}': {error}")
         
         def on_cancel():
             popup.close()
@@ -1762,13 +1763,13 @@ class ResourcePanel(Frame):
         try:
             char_path = Path(CHARACTERS_FOLDER) / f"{selected_name}.json"
             if not char_path.exists():
-                print(f"Error: Character file not found: {selected_name}")
+                logger.warning(f"Character file not found: {selected_name}")
                 return
             
             with open(char_path, 'r', encoding='utf-8') as f:
                 char_data = json.load(f)
-        except Exception as e:
-            print(f"Error loading character {selected_name}: {e}")
+        except (FileNotFoundError, OSError, ValueError, json.JSONDecodeError) as error:
+            logger.error(f"Error loading character '{selected_name}': {error}")
             return
         
         # Editable stats list (stamina, mental_health, drug_health auto = 100)
@@ -1939,7 +1940,7 @@ class ResourcePanel(Frame):
                     quantity_input.text = "1"
                     refresh_inventory_display()
             except ValueError:
-                print("Error: Quantity must be a valid number")
+                logger.warning("Quantity must be a valid number")
         
         Button(popup, Rect(550, inventory_y + 35, 90, 25), "Add Item", on_add_item)
         
@@ -1953,7 +1954,7 @@ class ResourcePanel(Frame):
             name = name_input.text.strip().replace(" ", "_")
             
             if not name:
-                print("Error: Character name is required")
+                logger.warning("Character name is required")
                 return
             
             # Collect stats
@@ -1962,7 +1963,7 @@ class ResourcePanel(Frame):
                 try:
                     stats[stat] = int(input_field.text.strip())
                 except ValueError:
-                    print(f"Error: {stat} must be a valid number")
+                    logger.warning(f"{stat} must be a valid number")
                     return
             
             # Preserve or use default for auto-initialized stats
@@ -2013,15 +2014,15 @@ class ResourcePanel(Frame):
                 with open(char_file, "w", encoding="utf-8") as f:
                     json.dump(char_data_updated, f, indent=4, ensure_ascii=False)
                 
-                print(f"Character modified: {name}")
+                logger.info(f"Character modified: {name}")
                 
                 # Reload resources and refresh list
                 self.resource_manager.reload()
                 self._refresh_resource_list()
                 
                 popup.close()
-            except Exception as e:
-                print(f"Error saving character: {e}")
+            except (FileNotFoundError, OSError, ValueError, json.JSONDecodeError) as error:
+                logger.error(f"Error saving character '{name}': {error}")
         
         def on_cancel():
             popup.close()
