@@ -9,7 +9,7 @@ from os.path import join
 
 # Logger constants
 LOG_FOLDER: str = join("cache", "logs")
-LOG_DEBUG: bool = True
+LOG_DEBUG: bool = False
 
 # Stats constants
 BASE_STATS: int = 50

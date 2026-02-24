@@ -4,8 +4,8 @@
         "str": 30,
         "dex": 90,
         "con": 30,
-        "wis": 100,
         "int": 200,
+        "wis": 100,
         "cha": 150,
         "per": 110,
         "agi": 120,
@@ -20,14 +20,14 @@
         "str": 0,
         "dex": 0,
         "con": 0,
-        "wis": 0,
         "int": 0,
+        "wis": 0,
         "cha": 0,
         "per": 0,
         "agi": 0,
         "luc": 0,
         "sur": 0,
-        "stamina": -35,
+        "stamina": 0,
         "mental_health": 0,
         "drug_health": 0
     },
@@ -36,5 +36,6 @@
         "Magnetic field",
         "Magnetic storm",
         "Electric Boost"
-    ]
+    ],
+    "inventory": []
 }

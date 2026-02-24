@@ -1,0 +1,10 @@
+{
+    "name": "Cape_de_Mage",
+    "description": "Une cape de mage (+10 wis)",
+    "modifier": [
+        [
+            "wis",
+            10
+        ]
+    ]
+}

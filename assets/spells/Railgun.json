@@ -7,7 +7,7 @@
             "target": "target",
             "target_stat": "hp",
             "effect": "malus",
-            "formula": "10 + diceratio(user.int, 20)"
+            "formula": "5 + diceratio(user.int, 20) - diceratio(target.wis, 10)"
         }
     ]
 }

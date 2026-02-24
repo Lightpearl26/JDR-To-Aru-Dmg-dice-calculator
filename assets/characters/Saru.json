@@ -4,10 +4,10 @@
         "str": 40,
         "dex": 95,
         "con": 40,
-        "wis": 75,
         "int": 80,
+        "wis": 75,
         "cha": 40,
-        "per": 65,
+        "per": 60,
         "agi": 30,
         "luc": 70,
         "sur": 50,
@@ -20,14 +20,14 @@
         "str": 0,
         "dex": 0,
         "con": 0,
-        "wis": 0,
         "int": 0,
+        "wis": 0,
         "cha": 0,
         "per": 0,
         "agi": 0,
         "luc": 0,
         "sur": 0,
-        "stamina": -10,
+        "stamina": 0,
         "mental_health": -20,
         "drug_health": 0
     },
@@ -38,14 +38,41 @@
         "Teleport"
     ],
     "inventory": [
-        ["Monster", 1],
-        ["Photos centre ville", 1],
-        ["Petit couteau", 1],
-        ["Rubik's Cube", 1],
-        ["Talkie Walkie", 1],
-        ["Pieces S.O.Nathanaël", 5],
-        ["Bague reve bronze", 2],
-        ["Arbalete poignet", 1],
-        ["Sceptre du pouvoir", 1]
+        [
+            "Monster",
+            1
+        ],
+        [
+            "Photos centre ville",
+            1
+        ],
+        [
+            "Petit couteau",
+            1
+        ],
+        [
+            "Rubik's Cube",
+            1
+        ],
+        [
+            "Talkie Walkie",
+            1
+        ],
+        [
+            "Pieces S.O.Nathana\u00ebl",
+            5
+        ],
+        [
+            "Bague reve bronze",
+            2
+        ],
+        [
+            "Arbalete poignet",
+            1
+        ],
+        [
+            "Sceptre du pouvoir",
+            1
+        ]
     ]
 }

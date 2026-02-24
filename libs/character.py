@@ -350,6 +350,7 @@ class Character:
         self.inventory = inventory
         logger.debug(f"[Character] Created character '{name}' with stats: "
                      f"{stats.dict} and modifiers: {stats_modifiers.dict}")
+        logger.info(f"[Character] Character '{name}' has been created.")
 
     # - Methods
     def get_current_stat(self, stat: str) -> int:
@@ -434,7 +435,7 @@ class Character:
     def cast_spell(self, spell_name: str,
                          target: Character,
                          user_dices: Optional[dict[str, int]]=None,
-                         target_dices: Optional[dict[str, int]]=None) -> None:
+                         target_dices: Optional[dict[str, int]]=None) -> str:
         """
         Cast a spell on a target character
         
@@ -449,17 +450,20 @@ class Character:
             target_dices: Optional[dict[str, int]]
                 The dice rolls of the target character
                 if None, new dice rolls will be generated
+        
+        returns:
+            str: A description of the spell effects applied
         """
         spell: Spell = self.spells.get(spell_name)
         if not spell:
             logger.debug(f"[Character] <'{self.name}'> Spell '{spell_name}' not known.")
-            return
+            return "Sort not found"
         
         u_dices = {stat: Dice("1d100", [value]) for stat, value in user_dices.items()} if user_dices else None
         t_dices = {stat: Dice("1d100", [value]) for stat, value in target_dices.items()} if target_dices else None
         logger.debug(f"[Character] <'{self.name}'> Casting spell '{spell_name}' on <'{target.name}'>.")
         
-        spell.cast(self, target, u_dices, t_dices)
+        return spell.cast(self, target, u_dices, t_dices)
 
     def learn_spell(self, spell_name: Spell) -> None:
         """
@@ -591,3 +595,18 @@ class Character:
                   encoding="utf-8") as file:
             blueprint = load(file)
         return cls.from_blueprint(blueprint)
+
+    def copy(self) -> Character:
+        """
+        Create a copy of the character
+        
+        returns:
+            Character: The copied Character object
+        """
+        return Character(
+            name=self.name,
+            stats=Stats.from_dict(self.stats.dict),
+            stats_modifiers=StatsModifiers.from_dict(self.stats_modifiers.dict),
+            spells={name: Spell.from_name(name) for name in self.spells.keys()},
+            inventory=Inventory.from_list(self.inventory.to_list())
+        )

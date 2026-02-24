@@ -195,7 +195,9 @@ class Effect:
         """
         Create an Effect from a blueprint dictionary
         """
-        formula = Formula(cmd=blueprint.get("formula", ""))
+        # Support both "formula" and "formule" keys for compatibility
+        formula_cmd = blueprint.get("formula") or blueprint.get("formule", "")
+        formula = Formula(cmd=formula_cmd)
         formula.compilate()
         return cls(
             target=blueprint.get("target", "target"),
@@ -208,7 +210,7 @@ class Effect:
     def resolve(self, user: Character,
                       target: Character,
                       user_dices: dict[str, Dice]=None,
-                      target_dices: dict[str, Dice]=None) -> None:
+                      target_dices: dict[str, Dice]=None) -> str:
         """
         Resolve the effect of the spell
         arguments:
@@ -220,26 +222,39 @@ class Effect:
                 The dices to use for the user (if needed)
             target_dices: dict[str, Dice], optional
                 The dices to use for the target (if needed)
+        
+        returns:
+            str: A description of the effect applied
         """
         value = self.formula.eval(user, target, user_dices, target_dices)
+        target_char = user if self.target == "user" else target
+        target_char_name = target_char.name
+        effect_symbol = "+" if self.effect == "bonus" else "-"
+        
         if self.target == "user":
             if self.effect == "bonus":
                 setattr(user.stats_modifiers, self.target_stat,
                         getattr(user.stats_modifiers, self.target_stat) + value)
                 logger.debug(f"[Effect] Applied bonus effect to user: {self.target_stat} += {value} (total={user.get_current_stat(self.target_stat)})")
+                return f"{target_char_name}: {self.target_stat} {effect_symbol} {value}"
             elif self.effect == "malus":
                 setattr(user.stats_modifiers, self.target_stat,
                         getattr(user.stats_modifiers, self.target_stat) - value)
                 logger.debug(f"[Effect] Applied malus effect to user: {self.target_stat} -= {value} (total={user.get_current_stat(self.target_stat)})")
+                return f"{target_char_name}: {self.target_stat} {effect_symbol} {value}"
         elif self.target == "target":
             if self.effect == "bonus":
                 setattr(target.stats_modifiers, self.target_stat,
                         getattr(target.stats_modifiers, self.target_stat) + value)
                 logger.debug(f"[Effect] Applied bonus effect to target: {self.target_stat} += {value} (total={target.get_current_stat(self.target_stat)})")
+                return f"{target_char_name}: {self.target_stat} {effect_symbol} {value}"
             elif self.effect == "malus":
                 setattr(target.stats_modifiers, self.target_stat,
                         getattr(target.stats_modifiers, self.target_stat) - value)
                 logger.debug(f"[Effect] Applied malus effect to target: {self.target_stat} -= {value} (total={target.get_current_stat(self.target_stat)})")
+                return f"{target_char_name}: {self.target_stat} {effect_symbol} {value}"
+        
+        return ""
 
 
 # ----- Spell class ----- #
@@ -290,7 +305,7 @@ class Spell:
     def cast(self, user: Character,
                    target: Character,
                    user_dices: dict[str, Dice]=None,
-                   target_dices: dict[str, Dice]=None) -> None:
+                   target_dices: dict[str, Dice]=None) -> str:
         """
         Cast the spell from user to target
         arguments:
@@ -302,12 +317,21 @@ class Spell:
                 The dices to use for the user (if needed)
             target_dices: dict[str, Dice], optional
                 The dices to use for the target (if needed)
+        
+        returns:
+            str: A description of all effects applied
         """
         logger.debug(f"[Spell] Casting spell '{self.name}' from '{user.name}' to '{target.name}'.")
         user.stats_modifiers.stamina -= self.cost
         logger.debug(f"[Spell] '{user.name}' pays {self.cost} stamina for casting spell '{self.name}' (remaining stamina={user.get_current_stat('stamina')}).")
+        
+        effect_logs = []
         for effect in self.effects:
-            effect.resolve(user, target, user_dices, target_dices)
+            effect_log = effect.resolve(user, target, user_dices, target_dices)
+            if effect_log:
+                effect_logs.append(effect_log)
+        
+        return "\n".join(effect_logs) if effect_logs else "Aucun effet"
 
 
 # - Load all spells

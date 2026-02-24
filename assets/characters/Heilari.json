@@ -4,8 +4,8 @@
         "str": 25,
         "dex": 95,
         "con": 40,
-        "wis": 65,
         "int": 80,
+        "wis": 65,
         "cha": 60,
         "per": 50,
         "agi": 40,
@@ -20,14 +20,14 @@
         "str": 0,
         "dex": 0,
         "con": 0,
-        "wis": 0,
         "int": -10,
+        "wis": 0,
         "cha": 2,
         "per": 0,
         "agi": 30,
         "luc": 0,
         "sur": 0,
-        "stamina": -55,
+        "stamina": 0,
         "mental_health": 0,
         "drug_health": 0
     },
@@ -39,16 +39,53 @@
         "Water gun"
     ],
     "inventory": [
-        ["Monster", 1],
-        ["Trousse a pharmacie", 1],
-        ["Photos centre ville", 1],
-        ["Dague de Judas", 1],
-        ["Conserves", 2],
-        ["Enceinte", 1],
-        ["Talkie Walkie", 1],
-        ["Carte numerique Charles", 1],
-        ["Nokia3310", 1],
-        ["Béatrice", 1],
-        ["Barres de chocolat", 208]
+        [
+            "Monster",
+            1
+        ],
+        [
+            "Trousse a pharmacie",
+            1
+        ],
+        [
+            "Photos centre ville",
+            1
+        ],
+        [
+            "Dague de Judas",
+            1
+        ],
+        [
+            "Conserves",
+            20
+        ],
+        [
+            "Enceinte",
+            1
+        ],
+        [
+            "Talkie Walkie",
+            1
+        ],
+        [
+            "Carte numerique Charles",
+            1
+        ],
+        [
+            "Nokia3310",
+            1
+        ],
+        [
+            "B\u00e9atrice",
+            1
+        ],
+        [
+            "Barres de chocolat",
+            207
+        ],
+        [
+            "Pieces_S.O.Nathana\u00ebl",
+            10
+        ]
     ]
 }

@@ -1,5 +1,5 @@
 {
-    "name": "Magnetic storm",
+    "name": "Magnetic_storm",
     "description": "Déchaîne une tempête électromagnétique infligeant de lourds dégâts à tous les ennemis dans la zone.",
     "cost": 15,
     "effects": [
