@@ -1,16 +1,16 @@
 {
-    "name": "Alistair",
+    "name": "Kevin",
     "stats": {
-        "str": 113,
-        "dex": 60,
-        "con": 110,
-        "int": 60,
-        "wis": 110,
-        "cha": 20,
-        "per": 20,
-        "agi": 60,
-        "luc": 25,
-        "sur": 50,
+        "str": 100,
+        "dex": 50,
+        "con": 99,
+        "int": 1,
+        "wis": 99,
+        "cha": 50,
+        "per": 50,
+        "agi": 70,
+        "luc": 105,
+        "sur": 1,
         "stamina": 100,
         "mental_health": 100,
         "drug_health": 100
@@ -28,28 +28,20 @@
         "luc": 0,
         "sur": 0,
         "stamina": 0,
-        "mental_health": -20,
+        "mental_health": 0,
         "drug_health": 0
     },
     "spells": [
-        "Shock sphere",
-        "Thunder fist",
-        "Electric_boost",
-        "Capacitor",
-        "Release"
+        "Nullify_zone"
     ],
     "inventory": [
         [
             "Monster",
-            1
+            3
         ],
         [
-            "Matraque",
-            1
-        ],
-        [
-            "Couteau_papillon",
-            1
+            "Pieces_S.O.Nathana\u00ebl",
+            5
         ]
     ]
 }

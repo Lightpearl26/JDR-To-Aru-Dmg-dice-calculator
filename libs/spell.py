@@ -183,10 +183,35 @@ class Formula:
                     value = 0
                 values.append(value)
             elif cls == DiceAttack:
-                # À adapter selon ton implémentation de DiceAttack
-                atk_ratio = DiceRatio(args[0].split(".")[1], int(args[1]))
-                def_ratio = DiceRatio(args[2].split(".")[1], int(args[3]))
-                value = DiceAttack(atk_ratio, def_ratio).resolve(user, target, user_dices, target_dices)
+                atk_who, atk_stat = args[0].split(".")
+                def_who, def_stat = args[2].split(".")
+                atk_ratio = DiceRatio(atk_stat, int(args[1]))
+                def_ratio = DiceRatio(def_stat, int(args[3]))
+
+                if atk_who == "user":
+                    atk_char = user
+                    atk_dice = user_dices.get(atk_stat) if user_dices else None
+                elif atk_who == "target":
+                    atk_char = target
+                    atk_dice = target_dices.get(atk_stat) if target_dices else None
+                else:
+                    atk_char = None
+                    atk_dice = None
+
+                if def_who == "user":
+                    def_char = user
+                    def_dice = user_dices.get(def_stat) if user_dices else None
+                elif def_who == "target":
+                    def_char = target
+                    def_dice = target_dices.get(def_stat) if target_dices else None
+                else:
+                    def_char = None
+                    def_dice = None
+
+                if atk_char is None or def_char is None:
+                    value = 0
+                else:
+                    value = DiceAttack(atk_ratio, def_ratio).resolve(atk_char, def_char, atk_dice, def_dice)
                 values.append(value)
             else:
                 values.append(0)

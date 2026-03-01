@@ -131,6 +131,8 @@ class SessionPanel(Frame):
             filtered_chars = party_chars
         
         if not filtered_chars:
+            self.party_frame.size = self.party_frame.rect.size
+            self.party_frame.scroll.y = 0
             Label(self.party_frame, (10, 10), "Aucun personnage trouvé" if search_filter else "Aucun personnage dans le groupe")
             return
         
@@ -177,6 +179,8 @@ class SessionPanel(Frame):
             filtered_chars = all_chars
         
         if not filtered_chars:
+            self.all_chars_frame.size = self.all_chars_frame.rect.size
+            self.all_chars_frame.scroll.y = 0
             Label(self.all_chars_frame, (10, 10), "Aucun personnage trouvé" if search_filter else "Aucun personnage chargé")
             return
         

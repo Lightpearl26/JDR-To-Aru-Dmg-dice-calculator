@@ -664,6 +664,10 @@ class Frame(UIWidget):
         if size != self._size:
             self._size = size
             self.surface = Surface(size, SRCALPHA)
+            max_scroll_x = max(0, self._size[0] - self.rect.width)
+            max_scroll_y = max(0, self._size[1] - self.rect.height)
+            self.scroll.x = min(max_scroll_x, max(0, self.scroll.x))
+            self.scroll.y = min(max_scroll_y, max(0, self.scroll.y))
 
 
 # ====================================================== #

@@ -1,0 +1,10 @@
+{
+    "name": "Couteau_papillon",
+    "description": "Simple couteau papillon",
+    "modifier": [
+        [
+            "str",
+            11
+        ]
+    ]
+}

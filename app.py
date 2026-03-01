@@ -70,7 +70,6 @@ class App(UIApp):
         # Initialize managers
         self.resource_manager = ResourceManager()
         self.session_manager = SessionManager()
-        self.session_manager.load_default_party()
 
         # Setup App main frame
         self.main_layer = self.add_layer()

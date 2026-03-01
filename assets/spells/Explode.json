@@ -1,0 +1,13 @@
+{
+    "name": "Explode",
+    "description": "cause une explosion dans un rayon de 2m ciblé",
+    "cost": 20,
+    "effects": [
+        {
+            "target": "target",
+            "target_stat": "hp",
+            "effect": "malus",
+            "formula": "diceratio(user.int, 20) - diceratio(target.con, 10)"
+        }
+    ]
+}

@@ -4,13 +4,13 @@
         "str": 75,
         "dex": 55,
         "con": 70,
-        "int": 30,
-        "wis": 50,
+        "int": 50,
+        "wis": 70,
         "cha": 60,
         "per": 50,
         "agi": 60,
         "luc": 50,
-        "sur": 80,
+        "sur": 85,
         "stamina": 100,
         "mental_health": 100,
         "drug_health": 100
@@ -27,13 +27,14 @@
         "agi": 0,
         "luc": 0,
         "sur": 0,
-        "stamina": -5,
+        "stamina": 0,
         "mental_health": -20,
         "drug_health": 0
     },
     "spells": [
         "Negativ zone",
-        "Ego execution"
+        "Ego execution",
+        "Berserker_Mode"
     ],
     "inventory": [
         [
@@ -50,7 +51,7 @@
         ],
         [
             "Pieces S.O.Nathana\u00ebl",
-            5
+            4
         ],
         [
             "Contrat avec Dexter",

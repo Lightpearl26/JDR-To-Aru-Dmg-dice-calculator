@@ -1,0 +1,13 @@
+{
+    "name": "Berserker_Mode",
+    "description": "Passe une cible (vivante) en mode berserk. A partir du deuxième tour, la cible peut quitter le mode berserk sur un jet de charisme réussi.",
+    "cost": 20,
+    "effects": [
+        {
+            "target": "target",
+            "target_stat": "mental_health",
+            "effect": "malus",
+            "formula": "0"
+        }
+    ]
+}
