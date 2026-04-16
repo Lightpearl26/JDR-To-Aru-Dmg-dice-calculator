@@ -1,0 +1,14 @@
+﻿{
+    "name":  "Paper_Mecha",
+    "description":  "Crée un armure entière en papier autour de lui augmentant drastiquement sa constitution",
+    "cost":  17,
+    "effects":  [
+                    {
+                        "target":  "user.con",
+                        "operator":  "bonus",
+                        "formula":  "50"
+                    }
+                ],
+    "targeting":  "single",
+    "runtime_policy":  "instant"
+}

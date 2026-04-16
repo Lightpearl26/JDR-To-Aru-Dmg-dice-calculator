@@ -1,21 +1,21 @@
-{
+﻿{
     "name": "Julie",
     "stats": {
-        "str": 30,
-        "dex": 90,
-        "con": 30,
+        "str": 85,
+        "dex": 120,
+        "con": 95,
         "int": 200,
-        "wis": 100,
-        "cha": 150,
-        "per": 110,
-        "agi": 120,
-        "luc": 80,
-        "sur": 100,
+        "wis": 110,
+        "cha": 95,
+        "per": 90,
+        "agi": 115,
+        "luc": 95,
+        "sur": 95,
         "stamina": 100,
         "mental_health": 100,
         "drug_health": 100
     },
-    "modifiers": {
+    "stats_modifier": {
         "hp": 0,
         "str": 0,
         "dex": 0,
@@ -32,10 +32,11 @@
         "drug_health": 0
     },
     "spells": [
-        "Railgun EX",
-        "Magnetic field",
-        "Magnetic storm",
-        "Electric Boost"
-    ],
-    "inventory": []
+        "Railgun_EX",
+        "Electric_boost",
+        "Magnetic_field",
+        "Magnetic_storm",
+        "Neural_Overclock",
+        "Arc_Network"
+    ]
 }

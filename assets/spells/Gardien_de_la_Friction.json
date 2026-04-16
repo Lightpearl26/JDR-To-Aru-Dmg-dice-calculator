@@ -1,0 +1,20 @@
+﻿{
+    "name":  "Gardien de la Friction",
+    "description":  "Le Frictiomaster concentre toute sa puissance pour manipuler la friction autour de lui : il devient quasi-invulnérable aux attaques physiques et se déplace instantanément pour protéger ses alliés. Tant que le sort est actif, il ne peut agir offensivement. Toute attaque physique visant un allié dans un rayon de 30m est redirigée vers lui.",
+    "cost":  25,
+    "effects":  [
+                    {
+                        "target":  "user.con",
+                        "operator":  "bonus",
+                        "formula":  "100"
+                    },
+                    {
+                        "target":  "user.agi",
+                        "operator":  "bonus",
+                        "formula":  "100"
+                    }
+                ],
+    "targeting":  "single",
+    "runtime_policy":  "maintain",
+    "delay":  3
+}

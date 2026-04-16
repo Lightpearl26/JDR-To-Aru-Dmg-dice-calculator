@@ -1,0 +1,19 @@
+﻿{
+    "name":  "Kinetic Friction Crash",
+    "description":  "Enzo annule puis rétablit brutalement les frottements, provoquant un impact météoritique.",
+    "cost":  23,
+    "effects":  [
+                    {
+                        "target":  "target.hp",
+                        "operator":  "malus",
+                        "formula":  "diceratio(user.agi, 23) + diceratio(user.str, 14) - diceratio(target.agi, 5)"
+                    },
+                    {
+                        "target":  "user.agi",
+                        "operator":  "bonus",
+                        "formula":  "diceratio(user.agi, 5)"
+                    }
+                ],
+    "targeting":  "single",
+    "runtime_policy":  "instant"
+}

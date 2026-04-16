@@ -1,6 +1,10 @@
-{
-    "name": "Metamorph",
-    "description": "Transforme le lanceur en son double",
-    "cost": 15,
-    "effects": []
+﻿{
+    "name":  "Metamorph",
+    "description":  "Transforme le lanceur en son double",
+    "cost":  15,
+    "effects":  [
+
+                ],
+    "targeting":  "single",
+    "runtime_policy":  "instant"
 }

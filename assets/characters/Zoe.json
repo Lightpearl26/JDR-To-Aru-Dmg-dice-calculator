@@ -1,0 +1,43 @@
+{
+    "name": "Zoe",
+    "stats": {
+        "str": 1,
+        "dex": 150,
+        "con": 70,
+        "int": 80,
+        "wis": 70,
+        "cha": 60,
+        "per": 70,
+        "agi": 150,
+        "luc": 0,
+        "sur": 10,
+        "stamina": 100,
+        "mental_health": 100,
+        "drug_health": 100
+    },
+    "stats_modifier": {
+        "hp": 0,
+        "str": 0,
+        "dex": 0,
+        "con": 0,
+        "int": 0,
+        "wis": 0,
+        "cha": 0,
+        "per": 0,
+        "agi": 0,
+        "luc": 0,
+        "sur": 0,
+        "stamina": 0,
+        "mental_health": 0,
+        "drug_health": 0
+    },
+    "spells": [
+        "Precise_weakpoint"
+    ],
+    "inventory": [
+        [
+            "Exosquelette",
+            1
+        ]
+    ]
+}

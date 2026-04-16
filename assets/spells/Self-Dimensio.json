@@ -1,0 +1,14 @@
+﻿{
+    "name":  "Self-Dimensio",
+    "description":  "Lumine crée une dimension de poche dans laquelle il peut s\u0027abriter",
+    "cost":  30,
+    "effects":  [
+                    {
+                        "target":  "user.hp",
+                        "operator":  "bonus",
+                        "formula":  "0"
+                    }
+                ],
+    "targeting":  "single",
+    "runtime_policy":  "instant"
+}

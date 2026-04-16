@@ -1,5 +1,5 @@
-{
-    "name": "Dummy",
+﻿{
+    "name": "dummy",
     "stats": {
         "str": 50,
         "dex": 50,
@@ -15,7 +15,7 @@
         "mental_health": 100,
         "drug_health": 100
     },
-    "modifiers": {
+    "stats_modifier": {
         "hp": 0,
         "str": 0,
         "dex": 0,
@@ -30,5 +30,7 @@
         "stamina": 0,
         "mental_health": 0,
         "drug_health": 0
-    }
+    },
+    "spells": [],
+    "inventory": []
 }

@@ -1,0 +1,24 @@
+﻿{
+    "name":  "Dark Matter Drain",
+    "description":  "Fabrice draine l\u0027énergie vitale de sa cible et la convertit en régénération personnelle, amplifiée par sa dark matter sans la consommer.",
+    "cost":  22,
+    "effects":  [
+                    {
+                        "target":  "target.hp",
+                        "operator":  "malus",
+                        "formula":  "8 + diceratio(user.int, 10) + ((100 - user.drug_health) / 10) * 4 - diceratio(target.con, 4)"
+                    },
+                    {
+                        "target":  "user.hp",
+                        "operator":  "bonus",
+                        "formula":  "4 + diceratio(user.sur, 7) + ((100 - user.drug_health) / 10) * 3"
+                    },
+                    {
+                        "target":  "target.con",
+                        "operator":  "malus",
+                        "formula":  "diceratio(user.int, 7) + (100 - user.drug_health) / 20"
+                    }
+                ],
+    "targeting":  "single",
+    "runtime_policy":  "instant"
+}

@@ -1,612 +1,495 @@
-# -*- coding: utf-8 -*-
-# pylint: disable=redefined-builtin
+#-*- coding: utf-8 -*-
 
 """
-JDR character libs
+Character module.
 """
 
-# Import external libs
+# import built-in modules
 from __future__ import annotations
+from dataclasses import dataclass, field
 from typing import Optional
+from json import load
 from os.path import join
-from json import load, dump
-from pygame import Surface, font, Rect, display
-from pygame.image import save as png_save
-import pygame.draw as draw
 
-
-# Import logger
-from . import logger
-
-# import config
+# import local modules
 from . import config
-
-# import components
-from .dice import Dice, DiceRatio
-from .spell import Spell
 from .item import Inventory
+from .dice import Dice, DiceRatio
+from .spells.spell_def import Spell
+from .spells.spell_event import SpellEvent
+from .spells.spell_effect import SpellEffect
+from .registry.entity import EntityRegistry
+from .registry.spell import SpellRegistry
 
 
-# ----- Stats class ----- #
+# ----- Stats definition ----- #
+@dataclass
 class Stats:
     """
-    Stats class
-    
-    This class represent the stats of a character
-    
-    arguments:
-        str: int
-            The strength stat value of the character
-        dex: int
-            The dexterity stat value of the character
-        con: int
-            The constitution stat value of the character
-        int: int
-            The intelligence stat value of the character
-        wis: int
-            The wisdom stat value of the character
-        cha: int
-            The charisma stat value of the character
-        per: int
-            The perception stat value of the character
-        agi: int
-            The agility stat value of the character
-        luc: int
-            The luck stat value of the character
-        sur: int
-            The survivability stat value of the character
-        stamina: int
-            The stamina stat value of the character
-        mental_health: int
-            The mental health stat value of the character
-        drug_health: int
-            The drug health stat value of the character
+    Class managing the stats of a character.
     """
-    def __init__(self,
-                 str: int=config.BASE_STATS,
-                 dex: int=config.BASE_STATS,
-                 con: int=config.BASE_STATS,
-                 int: int=config.BASE_STATS,
-                 wis: int=config.BASE_STATS,
-                 cha: int=config.BASE_STATS,
-                 per: int=config.BASE_STATS,
-                 agi: int=config.BASE_STATS,
-                 luc: int=config.BASE_STATS,
-                 sur: int=config.BASE_STATS,
-                 stamina: int=100,
-                 mental_health: int=100,
-                 drug_health: int=100) -> None:
-        self.str = str
-        self.dex = dex
-        self.con = con
-        self.int = int
-        self.wis = wis
-        self.cha = cha
-        self.per = per
-        self.agi = agi
-        self.luc = luc
-        self.sur = sur
-        self.stamina = stamina
-        self.mental_health = mental_health
-        self.drug_health = drug_health
-        logger.debug(f"[Stats] Created with values: str={str}, dex={dex}, "
-                     f"con={con}, int={int}, wis={wis}, cha={cha}, per={per}, "
-                     f"agi={agi}, luc={luc}, sur={sur}, stamina={stamina}, "
-                     f"mental_health={mental_health}, drug_health={drug_health}")
-
-    # - Properties
-    @property
-    def dict(self) -> dict[str, int]:
-        """
-        Get the stats as a dictionary
-        
-        returns:
-            dict[str, int]: The stats as a dictionary
-        """
-        return {
-            "str": self.str,
-            "dex": self.dex,
-            "con": self.con,
-            "int": self.int,
-            "wis": self.wis,
-            "cha": self.cha,
-            "per": self.per,
-            "agi": self.agi,
-            "luc": self.luc,
-            "sur": self.sur,
-            "stamina": self.stamina,
-            "mental_health": self.mental_health,
-            "drug_health": self.drug_health
-        }
+    str: int = config.BASE_STATS
+    dex: int = config.BASE_STATS
+    int: int = config.BASE_STATS
+    agi: int = config.BASE_STATS
+    con: int = config.BASE_STATS
+    wis: int = config.BASE_STATS
+    cha: int = config.BASE_STATS
+    per: int = config.BASE_STATS
+    luc: int = config.BASE_STATS
+    sur: int = config.BASE_STATS
+    mental_health: int = 100
+    drug_health: int = 100
+    stamina: int = 100
 
     @property
-    def hp(self) -> int:
+    def hp(self: Stats) -> int:
         """
-        Get the character's HP based on constitution and Wisdom stat
+        Calculate the hp of the character based on constitution and wisdom.
         
-        returns:
-            int: The character's HP
+        Formula: 10 + (con // 10) + (wis // 10)
         """
         return 10 + self.con // 10 + self.wis // 10
 
     @property
-    def lvl(self) -> int:
+    def lvl(self: Stats) -> int:
         """
-        Get the character's level based on average of stats
+        Calculate the level of the character based on the sum of all stats.
         
-        returns:
-            int: The character's level
+        Formula: (total_stats - 500) // 5
         """
-        total_stats = (self.str + self.dex + self.con +
-                       self.int + self.wis + self.cha +
-                       self.per + self.agi + self.luc +
-                       self.sur)
+        total_stats = sum([
+            self.str, self.dex, self.int, self.agi, self.con,
+            self.wis, self.cha, self.per, self.luc, self.sur
+        ])
         return (total_stats - 500) // 5
 
-    # - dict importation
     @classmethod
-    def from_dict(cls, stats_dict: dict[str, int]) -> Stats:
+    def from_dict(cls: type[Stats], data: dict[str, int]) -> Stats:
         """
-        Create a Stats object from a dictionary
-        
-        arguments:
-            stats_dict: dict[str, int]
-                The stats dictionary
-        returns:
-            Stats: The created Stats object
+        Create a Stats object from a dictionary.
         """
         return cls(
-            str=stats_dict.get("str", config.BASE_STATS),
-            dex=stats_dict.get("dex", config.BASE_STATS),
-            con=stats_dict.get("con", config.BASE_STATS),
-            int=stats_dict.get("int", config.BASE_STATS),
-            wis=stats_dict.get("wis", config.BASE_STATS),
-            cha=stats_dict.get("cha", config.BASE_STATS),
-            per=stats_dict.get("per", config.BASE_STATS),
-            agi=stats_dict.get("agi", config.BASE_STATS),
-            luc=stats_dict.get("luc", config.BASE_STATS),
-            sur=stats_dict.get("sur", config.BASE_STATS),
-            stamina=stats_dict.get("stamina", 100),
-            mental_health=stats_dict.get("mental_health", 100),
-            drug_health=stats_dict.get("drug_health", 100)
+            str=data.get("str", config.BASE_STATS),
+            dex=data.get("dex", config.BASE_STATS),
+            int=data.get("int", config.BASE_STATS),
+            agi=data.get("agi", config.BASE_STATS),
+            con=data.get("con", config.BASE_STATS),
+            wis=data.get("wis", config.BASE_STATS),
+            cha=data.get("cha", config.BASE_STATS),
+            per=data.get("per", config.BASE_STATS),
+            luc=data.get("luc", config.BASE_STATS),
+            sur=data.get("sur", config.BASE_STATS),
+            mental_health=data.get("mental_health", 100),
+            drug_health=data.get("drug_health", 100),
+            stamina=data.get("stamina", 100),
         )
 
 
-# ----- StatsModifiers class ----- #
-class StatsModifiers:
+# ----- StatsModifier definition ----- #
+@dataclass
+class StatsModifier:
     """
-    Stats modifiers class
+    Class managing the stats modifiers of a character.
     
-    This class represent the modifiers of a character's stats
-    
-    arguments:
-        hp: int
-            The HP modifier
-        str: int
-            The strength stat modifier
-        dex: int
-            The dexterity stat modifier
-        con: int
-            The constitution stat modifier
-        int: int
-            The intelligence stat modifier
-        wis: int
-            The wisdom stat modifier
-        cha: int
-            The charisma stat modifier
-        per: int
-            The perception stat modifier
-        agi: int
-            The agility stat modifier
-        luc: int
-            The luck stat modifier
-        sur: int
-            The survivability stat modifier
-        stamina: int
-            The stamina stat modifier
-        mental_health: int
-            The mental health stat modifier
-        drug_health: int
-            The drug health stat modifier
+    A stat modifier is a bonus gave by the MJ that is not counted in the character base stats
+    and that can be temporary or permanent.
     """
-    def __init__(self, hp: int=0,
-                       str: int=0,
-                       dex: int=0,
-                       con: int=0,
-                       int: int=0,
-                       wis: int=0,
-                       cha: int=0,
-                       per: int=0,
-                       agi: int=0,
-                       luc: int=0,
-                       sur: int=0,
-                       stamina: int=0,
-                       mental_health: int=0,
-                       drug_health: int=0) -> None:
-        self.hp = hp
-        self.str = str
-        self.dex = dex
-        self.con = con
-        self.int = int
-        self.wis = wis
-        self.cha = cha
-        self.per = per
-        self.agi = agi
-        self.luc = luc
-        self.sur = sur
-        self.stamina = stamina
-        self.mental_health = mental_health
-        self.drug_health = drug_health
-        logger.debug(f"[StatsModifiers] Created with values: hp={hp}, str={str}, "
-                     f"dex={dex}, con={con}, int={int}, wis={wis}, cha={cha}, "
-                     f"per={per}, agi={agi}, luc={luc}, sur={sur}, stamina={stamina}, "
-                     f"mental_health={mental_health}, drug_health={drug_health}")
+    hp: int = 0
+    str: int = 0
+    dex: int = 0
+    int: int = 0
+    agi: int = 0
+    con: int = 0
+    wis: int = 0
+    cha: int = 0
+    per: int = 0
+    luc: int = 0
+    sur: int = 0
+    mental_health: int = 0
+    drug_health: int = 0
+    stamina: int = 0
 
-    # - Properties
-    @property
-    def dict(self) -> dict[str, int]:
-        """
-        Get the stats modifiers as a dictionary
-        
-        returns:
-            dict[str, int]: The stats modifiers as a dictionary
-        """
-        return {
-            "hp": self.hp,
-            "str": self.str,
-            "dex": self.dex,
-            "con": self.con,
-            "int": self.int,
-            "wis": self.wis,
-            "cha": self.cha,
-            "per": self.per,
-            "agi": self.agi,
-            "luc": self.luc,
-            "sur": self.sur,
-            "stamina": self.stamina,
-            "mental_health": self.mental_health,
-            "drug_health": self.drug_health
-        }
-
-    # - dict importation
     @classmethod
-    def from_dict(cls, modifiers_dict: dict[str, int]) -> StatsModifiers:
+    def from_dict(cls: type[StatsModifier], data: dict[str, int]) -> StatsModifier:
         """
-        Create a StatsModifiers object from a dictionary
-        
-        arguments:
-            modifiers_dict: dict[str, int]
-                The stats modifiers dictionary
-        returns:
-            StatsModifiers: The created StatsModifiers object
+        Create a StatsModifier object from a dictionary.
         """
         return cls(
-            hp=modifiers_dict.get("hp", 0),
-            str=modifiers_dict.get("str", 0),
-            dex=modifiers_dict.get("dex", 0),
-            con=modifiers_dict.get("con", 0),
-            int=modifiers_dict.get("int", 0),
-            wis=modifiers_dict.get("wis", 0),
-            cha=modifiers_dict.get("cha", 0),
-            per=modifiers_dict.get("per", 0),
-            agi=modifiers_dict.get("agi", 0),
-            luc=modifiers_dict.get("luc", 0),
-            sur=modifiers_dict.get("sur", 0),
-            stamina=modifiers_dict.get("stamina", 0),
-            mental_health=modifiers_dict.get("mental_health", 0),
-            drug_health=modifiers_dict.get("drug_health", 0)
+            hp=data.get("hp", 0),
+            str=data.get("str", 0),
+            dex=data.get("dex", 0),
+            int=data.get("int", 0),
+            agi=data.get("agi", 0),
+            con=data.get("con", 0),
+            wis=data.get("wis", 0),
+            cha=data.get("cha", 0),
+            per=data.get("per", 0),
+            luc=data.get("luc", 0),
+            sur=data.get("sur", 0),
+            mental_health=data.get("mental_health", 0),
+            drug_health=data.get("drug_health", 0),
+            stamina=data.get("stamina", 0),
         )
 
-    # - Reset method
-    def reset(self) -> None:
-        """
-        Reset all modifiers to 0
-        """
-        self.hp = 0
-        self.str = 0
-        self.dex = 0
-        self.con = 0
-        self.int = 0
-        self.wis = 0
-        self.cha = 0
-        self.per = 0
-        self.agi = 0
-        self.luc = 0
-        self.sur = 0
-        self.stamina = 0
-        self.mental_health = 0
-        self.drug_health = 0
-        logger.debug("[StatsModifiers] All modifiers have been reset to 0")
 
-
-# ----- Character class ----- #
+# ----- Character definition ----- #
+@dataclass
 class Character:
     """
-    Character class
-    
-    This class represent a character in the game
-    arguments:
-        name: str
-            The name of the character
-        stats: Stats
-            The stats of the character
-        stats_modifiers: StatsModifiers
-            The stats modifiers of the character
-        spells: dict[str, Spell]
-            The spells known by the character
-        inventory: Inventory
-            The items owned by the character
+    Class storing the data of a given Character. it is not an Entity but
+    the metadata of an Entity that can be used to create it.
     """
-    def __init__(self,
-                 name: str,
-                 stats: Stats,
-                 stats_modifiers: StatsModifiers,
-                 spells: dict[str, Spell],
-                 inventory: Inventory) -> None:
-        self.name = name
-        self.stats = stats
-        self.stats_modifiers = stats_modifiers
-        self.spells = spells
-        self.inventory = inventory
-        logger.debug(f"[Character] Created character '{name}' with stats: "
-                     f"{stats.dict} and modifiers: {stats_modifiers.dict}")
-        logger.info(f"[Character] Character '{name}' has been created.")
+    name: str
+    stats: Stats = field(default_factory=Stats)
+    stats_modifier: StatsModifier = field(default_factory=StatsModifier)
+    inventory: Inventory = field(default_factory=Inventory)
+    spells: dict[str, Spell] = field(default_factory=dict)
 
-    # - Methods
-    def get_current_stat(self, stat: str) -> int:
+    @property
+    def hp(self: Character) -> int:
         """
-        Get the current value of a stat, including modifiers
+        Calculate the current hp of the character based on base hp and modifiers.
+        """
+        item_hp_modifier = self.inventory.get_stat_modifier("hp")
+        return self.stats.hp + self.stats_modifier.hp + item_hp_modifier
+
+    @property
+    def str(self: Character) -> int:
+        """
+        Calculate the current strength of the character based on base strength and modifiers.
+        """
+        item_str_modifier = self.inventory.get_stat_modifier("str")
+        return self.stats.str + self.stats_modifier.str + item_str_modifier
+
+    @property
+    def dex(self: Character) -> int:
+        """
+        Calculate the current dexterity of the character based on base dexterity and modifiers.
+        """
+        item_dex_modifier = self.inventory.get_stat_modifier("dex")
+        return self.stats.dex + self.stats_modifier.dex + item_dex_modifier
+
+    @property
+    def int(self: Character) -> int:
+        """
+        Calculate the current intelligence of the character based on base
+        intelligence and modifiers.
+        """
+        item_int_modifier = self.inventory.get_stat_modifier("int")
+        return self.stats.int + self.stats_modifier.int + item_int_modifier
+
+    @property
+    def agi(self: Character) -> int:
+        """
+        Calculate the current agility of the character based on base agility and modifiers.
+        """
+        item_agi_modifier = self.inventory.get_stat_modifier("agi")
+        return self.stats.agi + self.stats_modifier.agi + item_agi_modifier
+
+    @property
+    def con(self: Character) -> int:
+        """
+        Calculate the current constitution of the character based on base
+        constitution and modifiers.
+        """
+        item_con_modifier = self.inventory.get_stat_modifier("con")
+        return self.stats.con + self.stats_modifier.con + item_con_modifier
+
+    @property
+    def wis(self: Character) -> int:
+        """
+        Calculate the current wisdom of the character based on base wisdom and modifiers.
+        """
+        item_wis_modifier = self.inventory.get_stat_modifier("wis")
+        return self.stats.wis + self.stats_modifier.wis + item_wis_modifier
+
+    @property
+    def cha(self: Character) -> int:
+        """
+        Calculate the current charisma of the character based on base charisma and modifiers.
+        """
+        item_cha_modifier = self.inventory.get_stat_modifier("cha")
+        return self.stats.cha + self.stats_modifier.cha + item_cha_modifier
+
+    @property
+    def per(self: Character) -> int:
+        """
+        Calculate the current perception of the character based on base perception and modifiers.
+        """
+        item_per_modifier = self.inventory.get_stat_modifier("per")
+        return self.stats.per + self.stats_modifier.per + item_per_modifier
+
+    @property
+    def luc(self: Character) -> int:
+        """
+        Calculate the current luck of the character based on base luck and modifiers.
+        """
+        item_luc_modifier = self.inventory.get_stat_modifier("luc")
+        return self.stats.luc + self.stats_modifier.luc + item_luc_modifier
+
+    @property
+    def sur(self: Character) -> int:   
+        """
+        Calculate the current survival of the character based on base survival and modifiers.
+        """
+        item_sur_modifier = self.inventory.get_stat_modifier("sur")
+        return self.stats.sur + self.stats_modifier.sur + item_sur_modifier
+
+    @property
+    def mental_health(self: Character) -> int:
+        """
+        Calculate the current mental health of the character based on base mental health
+        and modifiers.
+        """
+        item_mental_health_modifier = self.inventory.get_stat_modifier("mental_health")
+        return (
+            self.stats.mental_health +
+            self.stats_modifier.mental_health +
+            item_mental_health_modifier
+        )
+
+    @property
+    def drug_health(self: Character) -> int:
+        """
+        Calculate the current drug health of the character based on base drug health and modifiers.
+        """
+        item_drug_health_modifier = self.inventory.get_stat_modifier("drug_health")
+        return self.stats.drug_health + self.stats_modifier.drug_health + item_drug_health_modifier
+
+    @property
+    def stamina(self: Character) -> int:
+        """
+        Calculate the current stamina of the character based on base stamina and modifiers.
+        """
+        item_stamina_modifier = self.inventory.get_stat_modifier("stamina")
+        return self.stats.stamina + self.stats_modifier.stamina + item_stamina_modifier
+
+    def get_spell(self: Character, spell_name: str) -> Optional[Spell]:
+        """
+        Get a spell from the character's spell list by name.
         
         arguments:
-            stat: str
-                The stat to get
+            spell_name: str
+                The name of the spell to get
         returns:
-            int: The current value of the stat
+            Optional[Spell]: The spell if found, None otherwise
         """
-        base_value = getattr(self.stats, stat, 0)
-        modifier_value = getattr(self.stats_modifiers, stat, 0)
-        inventory_value = self.inventory.get_stat_modifier(stat)
-        current_value = base_value + modifier_value + inventory_value
-        logger.debug(f"[Character] <'{self.name}'> Current value of stat '{stat}': {current_value}")
-        return current_value
+        return self.spells.get(spell_name)
 
-    def save(self) -> None:
+    def get_current_stat(self: Character, stat_name: str) -> int:
         """
-        Save the character data to a file
+        Compatibility helper used by dice module.
         """
-        with open(join(config.CHARACTERS_FOLDER, f"{self.name.replace(' ', '_')}.json"),
-                  "w",
-                  encoding="utf-8") as file:
-            dump({
-                "name": self.name,
-                "stats": self.stats.dict,
-                "modifiers": self.stats_modifiers.dict,
-                "spells": list(self.spells.keys()),
-                "inventory": self.inventory.to_list()
-            }, file, indent=4)
-        logger.debug(f"[Character] <'{self.name}'> Character data saved.")
+        value = getattr(self, stat_name, 0)
+        return int(value)
 
-    def create_sheet(self) -> None:
+    @classmethod
+    def from_dict(cls: type[Character], data: dict) -> Character:
         """
-        Create a character sheet Image
+        Create a Character object from a dictionary.
         """
-        display.init()
-        font.init()
-        image = Surface((600, 400))
-        image.fill((0, 0, 10))
-        title_font = font.Font(None, 50)
-        text_font = font.Font(None, 24)
-        name = title_font.render(self.name, True, (255, 255, 255))
-        image.blit(name, (20, 15))
-        lvl = text_font.render(f"Level: {self.stats.lvl}", True, (255, 255, 255))
-        rect = lvl.get_rect(bottomright=(535, 395))
-        image.blit(lvl, rect)
-        draw.line(image, (255, 255, 255), (0, 60), (600, 60), 2)
-        draw.rect(image, (255, 255, 255), Rect(200, 15, 200, 10))
-        draw.rect(image, (255, 255, 255), Rect(200, 35, 200, 10))
-        hp = text_font.render(f"HP: {self.get_current_stat('hp')} / {self.stats.hp}", True, (255, 255, 255))
-        image.blit(hp, (410, 12))
-        stamina = text_font.render(f"Stamina: {self.get_current_stat('stamina')} / {self.stats.stamina}", True, (255, 255, 255))
-        image.blit(stamina, (410, 32))
-        hp_ratio = self.get_current_stat('hp') / self.stats.hp if self.stats.hp > 0 else 0
-        stamina_ratio = self.get_current_stat('stamina') / self.stats.stamina if self.stats.stamina > 0 else 0
-        draw.rect(image, (155, 255, 55), Rect(200, 15, 200 * hp_ratio, 10))
-        draw.rect(image, (255, 155, 55), Rect(200, 35, 200 * stamina_ratio, 10))
-        draw.line(image, (255, 255, 255), (60, 60), (60, 400), 2)
-        draw.line(image, (255, 255, 255), (540, 60), (540, 400), 2)
-        for i, stat_name in enumerate(["str", "dex", "con", "wis", "int", "cha", "per", "agi", "luc", "sur"]):
-            stat_value = int(self.get_current_stat(stat_name))
-            base_stat_value = getattr(self.stats, stat_name)
-            modifier_value = getattr(self.stats_modifiers, stat_name)
-            stat_color = (255, 0, 0) if base_stat_value <= 30 else (255, 155, 0) if base_stat_value <= 50 else (155, 255, 55) if base_stat_value <= 100 else (55, 155, 255)
-            stat_text = text_font.render(f"{stat_name.upper()}", True, (255, 255, 255))
-            stat_text_rect = stat_text.get_rect(center=(30, 80 + i * 30))
-            stat_value_text = text_font.render(f"{stat_value}", True, (255, 255, 255))
-            stat_value_text_rect = stat_value_text.get_rect(center=(570, 80 + i * 30))
-            image.blit(stat_value_text, stat_value_text_rect)
-            image.blit(stat_text, stat_text_rect)
-            draw.rect(image, stat_color, Rect(70, 75 + i * 30, 200 * (base_stat_value / 100), 10))
-            draw.rect(image, (255, 55, 155), Rect(70 + (200 * (base_stat_value / 100)), 77 + i * 30, 200 * (modifier_value / 100), 6))
+        stats = Stats.from_dict(data.get("stats", {}))
+        stats_modifier = StatsModifier.from_dict(data.get("stats_modifier", {}))
+        inventory = Inventory(items=dict(data.get("inventory", [])))
+        spells_names: list[str] = data.get("spells", [])
+        spells_inst: dict[str, Optional[Spell]] = {
+            name: Spell.from_name(name) for name in spells_names
+        }
+        spells: dict[str, Spell] = {
+            name: spell for name, spell in spells_inst.items() if spell is not None
+        }
+        return cls(
+            name=data.get("name", "Dummy"),
+            stats=stats,
+            stats_modifier=stats_modifier,
+            inventory=inventory,
+            spells=spells,
+        )
 
-        png_save(image, join(config.SHEETS_FOLDER, f"{self.name.replace(' ', '_')}.png"))
-        logger.debug(f"[Character] <'{self.name}'> Character sheet created.")
-
-    # - Character actions
-    def cast_spell(self, spell_name: str,
-                         target: Character,
-                         user_dices: Optional[dict[str, int]]=None,
-                         target_dices: Optional[dict[str, int]]=None) -> str:
+    @classmethod
+    def from_name(cls: type[Character], character_name: str) -> Optional[Character]:
         """
-        Cast a spell on a target character
+        Create a Character object from a character name by loading its blueprint.
+        
+        arguments:
+            character_name: str
+                The name of the character to load
+        returns:
+            Optional[Character]: The character if found, None otherwise
+        """
+        filename = join(
+            config.CHARACTERS_FOLDER,
+            f"{character_name.replace(' ', '_').lower()}.json"
+        )
+        try:
+            with open(filename, "r", encoding="utf-8-sig") as file:
+                return cls.from_dict(load(file))
+        except FileNotFoundError:
+            return None
+
+
+# ----- Entity definition ----- #
+@dataclass
+class Entity:
+    """
+    Class representing an entity in the game.
+    It is created from a character and can be affected by spells and items.
+    """
+    name: str
+    character: Character
+    spell_events: list[SpellEvent] = field(default_factory=list)
+    spell_effects: list[SpellEffect] = field(default_factory=list)
+
+    @property
+    def stats_modifiers(self) -> StatsModifier:
+        """
+        Compatibility alias used by SpellEvent runtime.
+        """
+        return self.character.stats_modifier
+
+    @classmethod
+    def from_character(
+                cls: type[Entity],
+                entity_name: str,
+                character_name: str
+            ) -> Optional[Entity]:
+        """
+        Create an Entity object from a character name by loading its blueprint.
+        
+        arguments:
+            entity_name: str
+                The name of the entity to create
+            character_name: str
+                The name of the character to load as base for the entity
+        returns:
+            Optional[Entity]: The entity if the character is found, None otherwise
+        """
+        character = Character.from_name(character_name)
+        if character is None:
+            return None
+        return cls(
+            name=entity_name,
+            character=character
+        )
+
+    def get_stat(self, stat_name: str) -> int:
+        """
+        Get the current value of a stat by name.
+        
+        arguments:
+            stat_name: str
+                The name of the stat to get
+        returns:
+            int: The current value of the stat if found, 0 otherwise
+        """
+        base_stat = getattr(self.character, stat_name, 0)
+        spell_modifier = sum(
+            effect.delta for effect in self.spell_effects if effect.target_stat == stat_name
+        )
+        return base_stat + spell_modifier
+
+    def get_current_stat(self, stat_name: str) -> int:
+        """
+        Compatibility helper used by dice module.
+        """
+        return self.get_stat(stat_name)
+
+    def strike(
+            self,
+            target: Entity,
+            user_dices: Optional[Dice]=None,
+            target_dices: Optional[Dice]=None,
+        ) -> str:
+        """Resolve a strike attack (user.str vs target.con) and return damage dice cmd."""
+        if not user_dices:
+            user_dices = Dice.roll("1d100")
+        if not target_dices:
+            target_dices = Dice.roll("1d100")
+
+        user_value = DiceRatio("str", 100).resolve(self, user_dices)
+        target_value = DiceRatio("con", 100).resolve(target, target_dices)
+        nb_dice = max(0, (user_value - target_value) // 10)
+
+        dice_value = (
+            0 if not user_dices.critical_success and target_dices.critical_success else
+            0 if user_dices.critical_failure and not target_dices.critical_failure else
+            6 if user_dices.critical_success and target_dices.critical_success else
+            12 if user_dices.critical_success and target_dices.critical_failure else
+            8 if user_dices.critical_success or target_dices.critical_failure else
+            4
+        )
+        return f"{nb_dice}d{dice_value}"
+
+    def shoot(
+            self,
+            target: Entity,
+            user_dices: Optional[Dice]=None,
+            target_dices: Optional[Dice]=None,
+        ) -> str:
+        """Resolve a shoot attack (user.dex vs target.agi) and return damage dice cmd."""
+        if not user_dices:
+            user_dices = Dice.roll("1d100")
+        if not target_dices:
+            target_dices = Dice.roll("1d100")
+
+        user_value = DiceRatio("dex", 100).resolve(self, user_dices)
+        target_value = DiceRatio("agi", 100).resolve(target, target_dices)
+        nb_dice = max(0, (user_value - target_value) // 10)
+
+        dice_value = (
+            0 if not user_dices.critical_success and target_dices.critical_success else
+            0 if user_dices.critical_failure and not target_dices.critical_failure else
+            6 if user_dices.critical_success and target_dices.critical_success else
+            12 if user_dices.critical_success and target_dices.critical_failure else
+            8 if user_dices.critical_success or target_dices.critical_failure else
+            4
+        )
+        return f"{nb_dice}d{dice_value}"
+
+    def cast_spell(
+            self,
+            spell_name: str,
+            targets: list[Entity],
+            user_dices: Optional[dict[str, int]]=None,
+            targets_dices: Optional[dict[str, dict[str, int]]]=None
+        ) -> bool:
+        """
+        Cast a spell from the character's spell list on the given targets.
         
         arguments:
             spell_name: str
                 The name of the spell to cast
-            target: Character
-                The target character
-            user_dices: Optional[dict[str, int]]
-                The dice rolls of the user casting the spell
-                if None, new dice rolls will be generated
-            target_dices: Optional[dict[str, int]]
-                The dice rolls of the target character
-                if None, new dice rolls will be generated
-        
+            targets: list[Entity]
+                The list of targets to cast the spell on
         returns:
-            str: A description of the spell effects applied
+            bool: True if the spell was successfully cast, False otherwise
         """
-        spell: Spell = self.spells.get(spell_name)
-        if not spell:
-            logger.debug(f"[Character] <'{self.name}'> Spell '{spell_name}' not known.")
-            return "Sort not found"
-        
-        u_dices = {stat: Dice("1d100", [value]) for stat, value in user_dices.items()} if user_dices else None
-        t_dices = {stat: Dice("1d100", [value]) for stat, value in target_dices.items()} if target_dices else None
-        logger.debug(f"[Character] <'{self.name}'> Casting spell '{spell_name}' on <'{target.name}'>.")
-        
-        return spell.cast(self, target, u_dices, t_dices)
+        spell = self.character.get_spell(spell_name)
+        if spell is None:
+            return False
 
-    def learn_spell(self, spell_name: Spell) -> None:
-        """
-        Learn a new spell
-        
-        arguments:
-            spell_name: str
-                The name of the spell to learn
-        """
-        self.spells[spell_name] = Spell.from_name(spell_name)
-        logger.debug(f"[Character] <'{self.name}'> Learned new spell '{spell_name}'.")
+        SpellRegistry.register(spell)
+        EntityRegistry.register(self.name, self)
+        for target in targets:
+            EntityRegistry.register(target.name, target)
 
-    def strike(self, target: Character,
-                     user_dices: Optional[Dice]=None,
-                     target_dices: Optional[Dice]=None) -> str:
-        """
-        Perform a strike attack on a target character
-        
-        arguments:
-            target: Character
-                The target character
-            user_dices: Optional[Dice]
-                The dice rolls of the user performing the strike
-                if None, new dice rolls will be generated
-            target_dices: Optional[Dice]
-                The dice rolls of the target character
-                if None, new dice rolls will be generated
-        
-        returns:
-            str: The dice command used for the strike damages
-        """
-        if not user_dices:
-            user_dices = Dice.roll("1d100")
-        if not target_dices:
-            target_dices = Dice.roll("1d100")
-        user_value = DiceRatio("str", 100).resolve(self, user_dices)
-        target_value = DiceRatio("con", 100).resolve(target, target_dices)
-        nb_dice = max(0, (user_value - target_value) // 10)
-        dice_value = (
-            0 if not user_dices.critical_success and target_dices.critical_success else
-            0 if user_dices.critical_failure and not target_dices.critical_failure else
-            6 if user_dices.critical_success and target_dices.critical_success else
-            12 if user_dices.critical_success and target_dices.critical_failure else
-            8 if user_dices.critical_success or target_dices.critical_failure else
-            4
-        )
-        logger.debug(f"[Character] <'{self.name}'> Strike on <'{target.name}'>: " \
-                     f"{'Success' if nb_dice > 0 else 'Failure'}, {nb_dice}d{dice_value}")
-        return f"{nb_dice}d{dice_value}"
-
-    def shoot(self, target: Character,
-                    user_dices: Optional[Dice]=None,
-                    target_dices: Optional[Dice]=None) -> str:
-        """
-        Perform a shoot attack on a target character
-        
-        arguments:
-            target: Character
-                The target character
-            user_dices: Optional[Dice]
-                The dice rolls of the user performing the shoot
-                if None, new dice rolls will be generated
-            target_dices: Optional[Dice]
-                The dice rolls of the target character
-                if None, new dice rolls will be generated
-        
-        returns:
-            str: The dice command used for the shoot damages
-        """
-        if not user_dices:
-            user_dices = Dice.roll("1d100")
-        if not target_dices:
-            target_dices = Dice.roll("1d100")
-        user_value = DiceRatio("dex", 100).resolve(self, user_dices)
-        target_value = DiceRatio("agi", 100).resolve(target, target_dices)
-        nb_dice = max(0, (user_value - target_value) // 10)
-        dice_value = (
-            0 if not user_dices.critical_success and target_dices.critical_success else
-            0 if user_dices.critical_failure and not target_dices.critical_failure else
-            6 if user_dices.critical_success and target_dices.critical_success else
-            12 if user_dices.critical_success and target_dices.critical_failure else
-            8 if user_dices.critical_success or target_dices.critical_failure else
-            4
-        )
-        logger.debug(f"[Character] <'{self.name}'> Shoot on <'{target.name}'>: " \
-                     f"{'Success' if nb_dice > 0 else 'Failure'}, {nb_dice}d{dice_value}")
-        return f"{nb_dice}d{dice_value}"
-
-    # - Class methods
-    @classmethod
-    def from_blueprint(cls, blueprint: dict) -> Character:
-        """
-        Create a Character from a blueprint dictionary
-        
-        arguments:
-            blueprint: dict
-                The character blueprint dictionary
-        returns:
-            Character: The created Character object
-        """
-        stats = Stats.from_dict(blueprint.get("stats", {}))
-        stats_modifiers = StatsModifiers.from_dict(blueprint.get("modifiers", {}))
-        spells = {
-            spell_name: Spell.from_name(spell_name)
-            for spell_name in blueprint.get("spells", [])
-        }
-        inventory = Inventory.from_list(blueprint.get("inventory", []))
-        return cls(
-            name=blueprint.get("name", "Unnamed"),
-            stats=stats,
-            stats_modifiers=stats_modifiers,
-            spells=spells,
-            inventory=inventory
+        # Create the spell event linked to this spell
+        spell_event = SpellEvent(
+            spell_id=spell.name,
+            caster_id=self.name,
+            targets_ids=[target.name for target in targets],
+            effects=[],
+            runtime_policy=spell.runtime_policy
         )
 
-    @classmethod
-    def from_name(cls, name: str) -> Character:
-        """
-        Create a Character from a name (loads from file)
-        
-        arguments:
-            name: str
-                The name of the character
-        returns:
-            Character: The created Character object
-        """
-        with open(join(config.CHARACTERS_FOLDER, f"{name.replace(' ', '_')}.json"),
-                  "r",
-                  encoding="utf-8") as file:
-            blueprint = load(file)
-        return cls.from_blueprint(blueprint)
-
-    def copy(self) -> Character:
-        """
-        Create a copy of the character
-        
-        returns:
-            Character: The copied Character object
-        """
-        return Character(
-            name=self.name,
-            stats=Stats.from_dict(self.stats.dict),
-            stats_modifiers=StatsModifiers.from_dict(self.stats_modifiers.dict),
-            spells={name: Spell.from_name(name) for name in self.spells.keys()},
-            inventory=Inventory.from_list(self.inventory.to_list())
+        # apply the SpellEvent once for this turn
+        spell_event.apply(
+            [target.name for target in targets],
+            user_dices=user_dices,
+            targets_dices=targets_dices
         )
+
+        # add the spell event to the entity's list of spell events
+        self.spell_events.append(spell_event)
+        return True

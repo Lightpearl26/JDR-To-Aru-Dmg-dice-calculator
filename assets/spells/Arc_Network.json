@@ -1,0 +1,19 @@
+﻿{
+    "name":  "Arc Network",
+    "description":  "Julie déploie un maillage électromagnétique offensif sur sa cible.",
+    "cost":  19,
+    "effects":  [
+                    {
+                        "target":  "target.hp",
+                        "operator":  "malus",
+                        "formula":  "10 + diceratio(user.int, 14) - diceratio(target.wis, 10)"
+                    },
+                    {
+                        "target":  "target.per",
+                        "operator":  "malus",
+                        "formula":  "2 + diceratio(user.int, 7)"
+                    }
+                ],
+    "targeting":  "single",
+    "runtime_policy":  "instant"
+}

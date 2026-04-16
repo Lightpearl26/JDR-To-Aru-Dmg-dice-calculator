@@ -1,0 +1,19 @@
+﻿{
+    "name":  "Eternal_Winter",
+    "description":  "Crée un zone de Froid immense qui inflige des dégats et baisse l\u0027agilité des cibles",
+    "cost":  15,
+    "effects":  [
+                    {
+                        "target":  "target.hp",
+                        "operator":  "malus",
+                        "formula":  "5 + diceratio(user.int, 30) - diceratio(target.wis, 20)"
+                    },
+                    {
+                        "target":  "target.agi",
+                        "operator":  "malus",
+                        "formula":  "15 + diceratio(user.int, 10)"
+                    }
+                ],
+    "targeting":  "single",
+    "runtime_policy":  "instant"
+}

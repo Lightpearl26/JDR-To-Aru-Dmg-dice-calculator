@@ -1,4 +1,7 @@
-{
-    "name": "Ventoline",
-    "description": "Un inhalateur utilisé pour soulager les symptômes de l'asthme."
+﻿{
+    "name":  "Ventoline",
+    "description":  "Un inhalateur utilisé pour soulager les symptômes de l\u0027asthme.",
+    "modifier":  [
+
+                 ]
 }

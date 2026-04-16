@@ -1,0 +1,40 @@
+{
+    "name": "B\u00e9r\u00e9nice",
+    "stats": {
+        "str": 30,
+        "dex": 70,
+        "con": 50,
+        "int": 120,
+        "wis": 30,
+        "cha": 50,
+        "per": 50,
+        "agi": 50,
+        "luc": 50,
+        "sur": 20,
+        "stamina": 100,
+        "mental_health": 100,
+        "drug_health": 100
+    },
+    "stats_modifier": {
+        "hp": 0,
+        "str": 0,
+        "dex": 0,
+        "con": 0,
+        "int": 0,
+        "wis": 0,
+        "cha": 0,
+        "per": 0,
+        "agi": 0,
+        "luc": 0,
+        "sur": 0,
+        "stamina": 0,
+        "mental_health": 0,
+        "drug_health": 0
+    },
+    "spells": [
+        "Brandon enflamme",
+        "Water gun",
+        "Explode"
+    ],
+    "inventory": []
+}

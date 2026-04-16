@@ -1,4 +1,4 @@
-{
+﻿{
     "name": "Harold",
     "stats": {
         "str": 30,
@@ -15,7 +15,7 @@
         "mental_health": 100,
         "drug_health": 100
     },
-    "modifiers": {
+    "stats_modifier": {
         "hp": 0,
         "str": 0,
         "dex": 0,
@@ -32,7 +32,6 @@
         "drug_health": 0
     },
     "spells": [
-        "Brandon enflamme",
-        "Blessing shield"
+        "Brandon enflamme"
     ]
 }

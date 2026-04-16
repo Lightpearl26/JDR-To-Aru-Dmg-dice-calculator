@@ -1,7 +1,7 @@
 {
     "name": "Kevin",
     "stats": {
-        "str": 100,
+        "str": 130,
         "dex": 50,
         "con": 99,
         "int": 1,
@@ -15,12 +15,12 @@
         "mental_health": 100,
         "drug_health": 100
     },
-    "modifiers": {
+    "stats_modifier": {
         "hp": 0,
         "str": 0,
         "dex": 0,
         "con": 0,
-        "int": 0,
+        "int": 3,
         "wis": 0,
         "cha": 0,
         "per": 0,
@@ -42,6 +42,22 @@
         [
             "Pieces_S.O.Nathana\u00ebl",
             5
+        ],
+        [
+            "Pistolet_a_clou_automatique",
+            1
+        ],
+        [
+            "Marteau_plasmique",
+            1
+        ],
+        [
+            "PLAQUES_MADE_IN_DEXTER",
+            1
+        ],
+        [
+            "Lunettes_hyper_styl\u00e9e_de_dexter",
+            1
         ]
     ]
 }

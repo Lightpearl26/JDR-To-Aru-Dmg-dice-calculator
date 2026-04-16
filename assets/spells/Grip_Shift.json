@@ -1,0 +1,19 @@
+﻿{
+    "name":  "Grip Shift",
+    "description":  "Inversion locale du coefficient de friction : la cible perd tout appui.",
+    "cost":  10,
+    "effects":  [
+                    {
+                        "target":  "target.agi",
+                        "operator":  "malus",
+                        "formula":  "diceratio(user.agi, 5)"
+                    },
+                    {
+                        "target":  "target.sur",
+                        "operator":  "malus",
+                        "formula":  "diceratio(user.dex, 4)"
+                    }
+                ],
+    "targeting":  "single",
+    "runtime_policy":  "instant"
+}

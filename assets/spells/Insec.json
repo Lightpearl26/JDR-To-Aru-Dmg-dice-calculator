@@ -1,13 +1,14 @@
-{
-    "name": "Insec",
-    "description": "Se positionne derrière sa cible pour lu mettre un grop highkick dans la gueule et le projetter en arrière.",
-    "cost": 10,
-    "effects": [
-        {
-            "target": "target",
-            "target_stat": "hp",
-            "effect": "malus",
-            "formula": "diceratio(user.agi, 5) + diceratio(user.str, 10) - diceratio(target.con, 10)"
-        }
-    ]
+﻿{
+    "name":  "Insec",
+    "description":  "Se positionne derrière sa cible pour lu mettre un grop highkick dans la gueule et le projetter en arrière.",
+    "cost":  10,
+    "effects":  [
+                    {
+                        "target":  "target.hp",
+                        "operator":  "malus",
+                        "formula":  "diceratio(user.agi, 2) + diceratio(user.str, 5) - diceratio(target.con, 5)"
+                    }
+                ],
+    "targeting":  "single",
+    "runtime_policy":  "instant"
 }

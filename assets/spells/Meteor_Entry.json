@@ -1,0 +1,14 @@
+﻿{
+    "name":  "Meteor Entry",
+    "description":  "Entrée orbitale d\u0027Enzo : impact massif puis relance cinétique.",
+    "cost":  21,
+    "effects":  [
+                    {
+                        "target":  "target.hp",
+                        "operator":  "malus",
+                        "formula":  "diceratio(user.str, 20) + diceratio(user.agi, 14) - diceratio(target.con, 5)"
+                    }
+                ],
+    "targeting":  "single",
+    "runtime_policy":  "instant"
+}

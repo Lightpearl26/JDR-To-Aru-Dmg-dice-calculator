@@ -1,0 +1,24 @@
+﻿{
+    "name":  "Dark Matter Dominion",
+    "description":  "Dark Angel propage sa dark matter en rafale dévastatrice, puis consume toute sa réserve.",
+    "cost":  24,
+    "effects":  [
+                    {
+                        "target":  "target.hp",
+                        "operator":  "malus",
+                        "formula":  "diceratio(user.int, 21) + ((100 - user.drug_health) / 10) * 18 - diceratio(target.con, 5)"
+                    },
+                    {
+                        "target":  "target.con",
+                        "operator":  "malus",
+                        "formula":  "diceratio(user.int, 12) + ((100 - user.drug_health) / 10) * 6"
+                    },
+                    {
+                        "target":  "user.drug_health",
+                        "operator":  "bonus",
+                        "formula":  "100 - user.drug_health"
+                    }
+                ],
+    "targeting":  "single",
+    "runtime_policy":  "instant"
+}

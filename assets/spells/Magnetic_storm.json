@@ -1,13 +1,14 @@
-{
-    "name": "Magnetic_storm",
-    "description": "Déchaîne une tempête électromagnétique infligeant de lourds dégâts à tous les ennemis dans la zone.",
-    "cost": 15,
-    "effects": [
-        {
-            "target": "target",
-            "target_stat": "hp",
-            "effect": "malus",
-            "formula": "20 + diceratio(user.int, 30) - diceratio(target.wis, 10)"
-        }
-    ]
+﻿{
+    "name":  "Magnetic_storm",
+    "description":  "Déchaîne une tempête électromagnétique infligeant de lourds dégâts à tous les ennemis dans la zone.",
+    "cost":  22,
+    "effects":  [
+                    {
+                        "target":  "target.hp",
+                        "operator":  "malus",
+                        "formula":  "20 + diceratio(user.int, 14) - diceratio(target.wis, 5)"
+                    }
+                ],
+    "targeting":  "multi",
+    "runtime_policy":  "instant"
 }

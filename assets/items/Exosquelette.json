@@ -1,0 +1,26 @@
+{
+    "name": "Exosquelette",
+    "description": "Une armure en nano-robots servant d'exosquelette boostant les capacités physiques",
+    "modifier": [
+        [
+            "str",
+            10
+        ],
+        [
+            "dex",
+            20
+        ],
+        [
+            "con",
+            40
+        ],
+        [
+            "agi",
+            20
+        ],
+        [
+            "sur",
+            20
+        ]
+    ]
+}

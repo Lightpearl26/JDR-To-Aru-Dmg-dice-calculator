@@ -1,0 +1,19 @@
+﻿{
+    "name":  "Never_let_done",
+    "description":  "change l\u0027humeur d\u0027une personne pour lui redonner envie de se battre",
+    "cost":  0,
+    "effects":  [
+                    {
+                        "target":  "user.stamina",
+                        "operator":  "malus",
+                        "formula":  "10 + diceratio(user.int, 10)"
+                    },
+                    {
+                        "target":  "target.stamina",
+                        "operator":  "bonus",
+                        "formula":  "10 + diceratio(user.int, 10)"
+                    }
+                ],
+    "targeting":  "single",
+    "runtime_policy":  "instant"
+}

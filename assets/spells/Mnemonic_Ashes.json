@@ -1,0 +1,19 @@
+﻿{
+    "name":  "Mnemonic Ashes",
+    "description":  "Le cycle de renaissance consume ses propres souvenirs pour accélérer la régénération.",
+    "cost":  8,
+    "effects":  [
+                    {
+                        "target":  "user.int",
+                        "operator":  "malus",
+                        "formula":  "diceratio(user.sur, 4)"
+                    },
+                    {
+                        "target":  "user.hp",
+                        "operator":  "bonus",
+                        "formula":  "diceratio(user.sur, 4)"
+                    }
+                ],
+    "targeting":  "single",
+    "runtime_policy":  "instant"
+}

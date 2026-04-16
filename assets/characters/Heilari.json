@@ -1,21 +1,21 @@
 {
     "name": "Heilari",
     "stats": {
-        "str": 25,
+        "str": 35,
         "dex": 95,
-        "con": 40,
-        "int": 80,
+        "con": 20,
+        "int": 95,
         "wis": 65,
         "cha": 60,
-        "per": 50,
-        "agi": 40,
+        "per": 90,
+        "agi": 70,
         "luc": 50,
         "sur": 75,
         "stamina": 100,
         "mental_health": 100,
         "drug_health": 100
     },
-    "modifiers": {
+    "stats_modifier": {
         "hp": 0,
         "str": 0,
         "dex": 0,
@@ -24,7 +24,7 @@
         "wis": 0,
         "cha": 2,
         "per": 0,
-        "agi": 30,
+        "agi": 10,
         "luc": 0,
         "sur": 0,
         "stamina": 0,
@@ -57,7 +57,7 @@
         ],
         [
             "Conserves",
-            20
+            15
         ],
         [
             "Enceinte",
@@ -86,6 +86,10 @@
         [
             "Pieces_S.O.Nathana\u00ebl",
             10
+        ],
+        [
+            "PLAQUES_MADE_IN_DEXTER",
+            1
         ]
     ]
 }

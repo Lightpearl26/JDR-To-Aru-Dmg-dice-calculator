@@ -1,4 +1,7 @@
-{
-    "name": "Rubik's Cube",
-    "description": "Un Rubik's Cube pour passer le temps"
+﻿{
+    "name":  "Rubik\u0027s Cube",
+    "description":  "Un Rubik\u0027s Cube pour passer le temps",
+    "modifier":  [
+
+                 ]
 }

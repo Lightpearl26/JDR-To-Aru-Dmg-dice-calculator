@@ -1,0 +1,19 @@
+﻿{
+    "name":  "Inevitable Step",
+    "description":  "Emma anticipe les trajectoires et se place toujours là où il faut.",
+    "cost":  10,
+    "effects":  [
+                    {
+                        "target":  "user.agi",
+                        "operator":  "bonus",
+                        "formula":  "diceratio(user.per, 5)"
+                    },
+                    {
+                        "target":  "target.agi",
+                        "operator":  "malus",
+                        "formula":  "diceratio(user.wis, 4)"
+                    }
+                ],
+    "targeting":  "single",
+    "runtime_policy":  "instant"
+}

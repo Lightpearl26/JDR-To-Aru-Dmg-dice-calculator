@@ -1,13 +1,14 @@
-{
-    "name": "Railgun EX",
-    "description": "Version améliorée du Railgun, infligeant des dégâts massifs à une cible.",
-    "cost": 35,
-    "effects": [
-        {
-            "target": "target",
-            "target_stat": "hp",
-            "effect": "malus",
-            "formula": "diceratio(user.int, 30) - diceratio(target.wis, 10)"
-        }
-    ]
+﻿{
+    "name":  "Railgun EX",
+    "description":  "Version améliorée du Railgun, infligeant des dégâts massifs à une cible.",
+    "cost":  24,
+    "effects":  [
+                    {
+                        "target":  "target.hp",
+                        "operator":  "malus",
+                        "formula":  "10 + diceratio(user.int, 36) + diceratio(user.dex, 14) - diceratio(target.wis, 34)"
+                    }
+                ],
+    "targeting":  "single",
+    "runtime_policy":  "instant"
 }

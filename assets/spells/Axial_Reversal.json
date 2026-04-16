@@ -1,0 +1,19 @@
+﻿{
+    "name":  "Axial Reversal",
+    "description":  "Vincent inverse l\u0027axe des vecteurs de mouvement de la cible.",
+    "cost":  10,
+    "effects":  [
+                    {
+                        "target":  "target.agi",
+                        "operator":  "malus",
+                        "formula":  "diceratio(user.dex, 5)"
+                    },
+                    {
+                        "target":  "target.str",
+                        "operator":  "malus",
+                        "formula":  "diceratio(user.int, 6)"
+                    }
+                ],
+    "targeting":  "single",
+    "runtime_policy":  "instant"
+}

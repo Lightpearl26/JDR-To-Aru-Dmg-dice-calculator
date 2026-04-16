@@ -1,0 +1,48 @@
+{
+    "name": "Violette",
+    "stats": {
+        "str": 20,
+        "dex": 100,
+        "con": 20,
+        "int": 70,
+        "wis": 70,
+        "cha": 120,
+        "per": 100,
+        "agi": 110,
+        "luc": 0,
+        "sur": 50,
+        "stamina": 100,
+        "mental_health": 100,
+        "drug_health": 100
+    },
+    "stats_modifier": {
+        "hp": 0,
+        "str": 0,
+        "dex": 0,
+        "con": 0,
+        "int": 0,
+        "wis": 0,
+        "cha": 0,
+        "per": 0,
+        "agi": 0,
+        "luc": 0,
+        "sur": 0,
+        "stamina": 0,
+        "mental_health": 0,
+        "drug_health": 0
+    },
+    "spells": [
+        "Trail_Lock",
+        "Lock_On"
+    ],
+    "inventory": [
+        [
+            "Exosquelette",
+            1
+        ],
+        [
+            "Sniper",
+            1
+        ]
+    ]
+}

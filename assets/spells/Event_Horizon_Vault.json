@@ -1,0 +1,19 @@
+﻿{
+    "name":  "Event Horizon Vault",
+    "description":  "Le Spacemaster comprime l\u0027espace autour de la cible puis referme la poche dimensionnelle.",
+    "cost":  13,
+    "effects":  [
+                    {
+                        "target":  "target.hp",
+                        "operator":  "malus",
+                        "formula":  "diceratio(user.int, 10) + diceratio(user.wis, 4) - diceratio(target.wis, 5)"
+                    },
+                    {
+                        "target":  "user.hp",
+                        "operator":  "bonus",
+                        "formula":  "diceratio(user.int, 3)"
+                    }
+                ],
+    "targeting":  "single",
+    "runtime_policy":  "instant"
+}

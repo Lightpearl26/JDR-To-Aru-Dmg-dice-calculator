@@ -1,0 +1,19 @@
+﻿{
+    "name":  "Trail Lock",
+    "description":  "Le chasseur verrouille la signature de sa proie et réduit drastiquement ses options d\u0027esquive.",
+    "cost":  11,
+    "effects":  [
+                    {
+                        "target":  "target.agi",
+                        "operator":  "malus",
+                        "formula":  "diceratio(user.per, 5)"
+                    },
+                    {
+                        "target":  "target.luc",
+                        "operator":  "malus",
+                        "formula":  "diceratio(user.per, 5)"
+                    }
+                ],
+    "targeting":  "single",
+    "runtime_policy":  "instant"
+}

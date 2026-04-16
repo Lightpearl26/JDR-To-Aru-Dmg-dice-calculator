@@ -1,0 +1,14 @@
+﻿{
+    "name":  "Invocation_de_Ciel",
+    "description":  "Lumine parvient à ramener Ciel dans le monde réel avec un nouveau corps. (Echoue si personne n\u0027a été éliminé dans la dimension de Lumine)",
+    "cost":  50,
+    "effects":  [
+                    {
+                        "target":  "user.stamina",
+                        "operator":  "bonus",
+                        "formula":  "100 - user.stamina"
+                    }
+                ],
+    "targeting":  "single",
+    "runtime_policy":  "instant"
+}

@@ -15,7 +15,7 @@
         "mental_health": 100,
         "drug_health": 100
     },
-    "modifiers": {
+    "stats_modifier": {
         "hp": 0,
         "str": 0,
         "dex": 0,
@@ -28,12 +28,13 @@
         "luc": 0,
         "sur": 0,
         "stamina": 0,
-        "mental_health": -30,
+        "mental_health": -40,
         "drug_health": 0
     },
     "spells": [
         "Railgun",
-        "Absolute defense"
+        "Absolute defense",
+        "Plaques_tectoNIQUE"
     ],
     "inventory": [
         [
@@ -54,6 +55,18 @@
         ],
         [
             "Parapluie Mickey",
+            1
+        ],
+        [
+            "Le_tournevis_de_Dr_Who",
+            1
+        ],
+        [
+            "Ozvitsh",
+            1
+        ],
+        [
+            "Rollers_GEOX",
             1
         ]
     ]

@@ -1,0 +1,14 @@
+{
+    "name": "Gantelet_de_vandale",
+    "description": "+5 CON - 20 AGI",
+    "modifier": [
+        [
+            "con",
+            5
+        ],
+        [
+            "agi",
+            -20
+        ]
+    ]
+}

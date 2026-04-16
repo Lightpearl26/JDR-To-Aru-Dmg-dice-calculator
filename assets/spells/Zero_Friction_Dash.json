@@ -1,0 +1,14 @@
+﻿{
+    "name":  "Zero Friction Dash",
+    "description":  "Suppression instantanée des frottements : accélération fulgurante.",
+    "cost":  6,
+    "effects":  [
+                    {
+                        "target":  "user.agi",
+                        "operator":  "bonus",
+                        "formula":  "diceratio(user.agi, 5)"
+                    }
+                ],
+    "targeting":  "single",
+    "runtime_policy":  "instant"
+}

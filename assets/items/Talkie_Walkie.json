@@ -1,4 +1,7 @@
-{
-    "name": "Talkie Walkie",
-    "description": "Un talkie walkie pour communiquer à distance"
+﻿{
+    "name":  "Talkie Walkie",
+    "description":  "Un talkie walkie pour communiquer à distance",
+    "modifier":  [
+
+                 ]
 }

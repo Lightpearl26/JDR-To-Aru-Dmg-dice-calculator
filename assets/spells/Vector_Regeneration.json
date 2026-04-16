@@ -1,0 +1,19 @@
+﻿{
+    "name":  "Vector Regeneration",
+    "description":  "Vincent recycle les flux inertiels autour de son corps pour restaurer ses points de vie et stabiliser sa posture.",
+    "cost":  22,
+    "effects":  [
+                    {
+                        "target":  "user.hp",
+                        "operator":  "bonus",
+                        "formula":  "12 + diceratio(user.int, 12) + diceratio(user.wis, 8)"
+                    },
+                    {
+                        "target":  "user.con",
+                        "operator":  "bonus",
+                        "formula":  "4 + diceratio(user.int, 5)"
+                    }
+                ],
+    "targeting":  "single",
+    "runtime_policy":  "instant"
+}

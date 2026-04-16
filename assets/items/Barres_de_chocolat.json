@@ -1,4 +1,7 @@
-{
-    "name": "Barres de chocolat",
-    "description": "Délicieuses barres de chocolat qui restaurent 5 points de vie."
+﻿{
+    "name":  "Barres de chocolat",
+    "description":  "Délicieuses barres de chocolat qui restaurent 5 points de vie.",
+    "modifier":  [
+
+                 ]
 }

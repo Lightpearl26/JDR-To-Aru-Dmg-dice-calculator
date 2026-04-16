@@ -1,0 +1,19 @@
+﻿{
+    "name":  "Thought Drown",
+    "description":  "Submersion cognitive qui réduit la cible à un bruit mental chaotique.",
+    "cost":  16,
+    "effects":  [
+                    {
+                        "target":  "target.cha",
+                        "operator":  "malus",
+                        "formula":  "diceratio(user.wis, 9)"
+                    },
+                    {
+                        "target":  "target.hp",
+                        "operator":  "malus",
+                        "formula":  "diceratio(user.int, 9)"
+                    }
+                ],
+    "targeting":  "single",
+    "runtime_policy":  "instant"
+}

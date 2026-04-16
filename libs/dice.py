@@ -6,11 +6,8 @@ JDR dice libs
 
 # Import external libs
 from __future__ import annotations
-from typing import TYPE_CHECKING, Optional
+from typing import Optional, TYPE_CHECKING
 from random import randint
-
-# Import logger
-from . import logger
 
 if TYPE_CHECKING:
     from .character import Character
@@ -100,12 +97,10 @@ class Dice:
             num_dices = int(num_dices)
             dice_type = int(dice_type)
         except Exception as e:
-            logger.error(f"Invalid dice command: {cmd} - {e}")
             raise ValueError(f"Invalid dice command: {cmd}") from e
 
         # roll the dices
         dices_values = [randint(1, dice_type) for _ in range(num_dices)]
-        logger.debug(f"[Dice] Rolled dice '{cmd}': values={dices_values}")
 
         # create and return the Dice object
         return cls(cmd, dices_values)
@@ -128,8 +123,6 @@ class DiceCheck:
         self.dice = dice
         self.character = character
         self.stat = stat
-        logger.debug(f"[DiceCheck] Created for character '{character.name}' "
-                     f"stat '{stat}': success={self.success}")
 
     @property
     def success(self) -> bool:
@@ -202,9 +195,6 @@ class DiceRatio:
 
         # calculate and return the ratio value
         result = (stat_value - dice.total) * self.ratio // 100
-        logger.debug(f"[DiceRatio] Resolving ratio for stat '{self.stat}': "
-                     f"stat_value={stat_value}, dice_total={dice.total}, "
-                     f"ratio={self.ratio}, result={result}")
         return int(result)
 
 
@@ -222,9 +212,6 @@ class DiceAttack:
     def __init__(self, user_ratio: DiceRatio, target_ratio: DiceRatio) -> None:
         self.user_ratio = user_ratio
         self.target_ratio = target_ratio
-        logger.debug(f"[DiceAttack] Created with user_ratio '{user_ratio.stat}':"
-                     f"{user_ratio.ratio}%, target_ratio '{target_ratio.stat}':"
-                     f"{target_ratio.ratio}%")
 
     def resolve(self, user: Character,
                       target: Character,
@@ -250,8 +237,6 @@ class DiceAttack:
         user_value = self.user_ratio.resolve(user, user_dices)
         # resolve the target's ratio
         target_value = self.target_ratio.resolve(target, target_dices)
-        logger.debug(f"[DiceAttack] Resolving attack: user_value={user_value}, "
-                     f"target_value={target_value}")
         return max(0, user_value - target_value)
 
     @classmethod

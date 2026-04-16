@@ -1,0 +1,10 @@
+{
+    "name": "Gant_de_Thanosux",
+    "description": "Un artefact magique très puissant qui confère le pouvoir de tuer un individu vivant en échange d'un test de Chance au dés",
+    "modifier": [
+        [
+            "luc",
+            -25
+        ]
+    ]
+}

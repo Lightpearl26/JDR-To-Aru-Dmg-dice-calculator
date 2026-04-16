@@ -1,0 +1,19 @@
+﻿{
+    "name":  "Last Breath Rewind",
+    "description":  "Jean rembobine son dernier souffle et annule une partie des dégâts subis.",
+    "cost":  9,
+    "effects":  [
+                    {
+                        "target":  "user.hp",
+                        "operator":  "bonus",
+                        "formula":  "diceratio(user.sur, 5)"
+                    },
+                    {
+                        "target":  "user.stamina",
+                        "operator":  "bonus",
+                        "formula":  "diceratio(user.luc, 4)"
+                    }
+                ],
+    "targeting":  "single",
+    "runtime_policy":  "instant"
+}

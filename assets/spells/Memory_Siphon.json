@@ -1,0 +1,19 @@
+﻿{
+    "name":  "Memory Siphon",
+    "description":  "Extraction brutale de souvenirs : la cible perd ses repères et sa résistance.",
+    "cost":  24,
+    "effects":  [
+                    {
+                        "target":  "target.hp",
+                        "operator":  "malus",
+                        "formula":  "diceratio(user.int, 10) + diceratio(user.cha, 6) - diceratio(target.wis, 5)"
+                    },
+                    {
+                        "target":  "target.per",
+                        "operator":  "malus",
+                        "formula":  "diceratio(user.int, 6)"
+                    }
+                ],
+    "targeting":  "single",
+    "runtime_policy":  "instant"
+}

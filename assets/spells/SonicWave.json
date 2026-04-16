@@ -1,13 +1,14 @@
-{
-    "name": "SonicWave",
-    "description": "Frappe violemment le sol infligeant des dégâts autour de lui.",
-    "cost": 10,
-    "effects": [
-        {
-            "target": "target",
-            "target_stat": "hp",
-            "effect": "malus",
-            "formula": "diceratio(user.str, 10) - diceratio(target.con, 10)"
-        }
-    ]
+﻿{
+    "name":  "SonicWave",
+    "description":  "Frappe violemment le sol infligeant des dégâts autour de lui.",
+    "cost":  7,
+    "effects":  [
+                    {
+                        "target":  "target.hp",
+                        "operator":  "malus",
+                        "formula":  "diceratio(user.str, 10) - diceratio(target.con, 5)"
+                    }
+                ],
+    "targeting":  "multi",
+    "runtime_policy":  "instant"
 }

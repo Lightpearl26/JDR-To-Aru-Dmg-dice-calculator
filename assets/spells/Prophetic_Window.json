@@ -1,0 +1,19 @@
+﻿{
+    "name":  "Prophetic Window",
+    "description":  "Emma ouvre une fenêtre de quelques secondes dans le futur pour guider son équipe.",
+    "cost":  10,
+    "effects":  [
+                    {
+                        "target":  "user.per",
+                        "operator":  "bonus",
+                        "formula":  "diceratio(user.wis, 5)"
+                    },
+                    {
+                        "target":  "user.agi",
+                        "operator":  "bonus",
+                        "formula":  "diceratio(user.per, 4)"
+                    }
+                ],
+    "targeting":  "single",
+    "runtime_policy":  "instant"
+}

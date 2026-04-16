@@ -1,0 +1,14 @@
+﻿{
+    "name":  "Paper_blade",
+    "description":  "crée une lame tranchante en papier qui inflige de lourd dégats a sa cible",
+    "cost":  10,
+    "effects":  [
+                    {
+                        "target":  "target.hp",
+                        "operator":  "malus",
+                        "formula":  "diceratio(user.str, 5) + diceratio(user.int, 9) - diceratio(target.con, 9) - diceratio(target.wis, 5)"
+                    }
+                ],
+    "targeting":  "single",
+    "runtime_policy":  "instant"
+}

@@ -1,6 +1,10 @@
-{
-    "name": "teleport",
-    "description": "Teleporte le lanceur",
-    "cost": 5,
-    "effects": []
+﻿{
+    "name":  "teleport",
+    "description":  "Teleporte le lanceur",
+    "cost":  5,
+    "effects":  [
+
+                ],
+    "targeting":  "single",
+    "runtime_policy":  "instant"
 }

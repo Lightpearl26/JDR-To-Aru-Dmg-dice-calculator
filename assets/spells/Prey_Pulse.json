@@ -1,0 +1,14 @@
+﻿{
+    "name":  "Prey Pulse",
+    "description":  "Une impulsion de pistage qui expose les points faibles de la cible.",
+    "cost":  18,
+    "effects":  [
+                    {
+                        "target":  "target.hp",
+                        "operator":  "malus",
+                        "formula":  "diceratio(user.per, 12) - diceratio(target.wis, 4)"
+                    }
+                ],
+    "targeting":  "single",
+    "runtime_policy":  "instant"
+}

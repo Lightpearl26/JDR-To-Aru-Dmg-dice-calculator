@@ -1,0 +1,10 @@
+{
+    "name": "Pistolet_a_clou_automatique",
+    "description": "tout simplement",
+    "modifier": [
+        [
+            "dex",
+            13
+        ]
+    ]
+}

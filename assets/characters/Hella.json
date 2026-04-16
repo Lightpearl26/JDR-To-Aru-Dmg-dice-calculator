@@ -2,9 +2,9 @@
     "name": "Hella",
     "stats": {
         "str": 75,
-        "dex": 55,
+        "dex": 75,
         "con": 70,
-        "int": 50,
+        "int": 60,
         "wis": 70,
         "cha": 60,
         "per": 50,
@@ -15,7 +15,7 @@
         "mental_health": 100,
         "drug_health": 100
     },
-    "modifiers": {
+    "stats_modifier": {
         "hp": 0,
         "str": 0,
         "dex": 0,
@@ -28,13 +28,16 @@
         "luc": 0,
         "sur": 0,
         "stamina": 0,
-        "mental_health": -20,
+        "mental_health": -40,
         "drug_health": 0
     },
     "spells": [
         "Negativ zone",
         "Ego execution",
-        "Berserker_Mode"
+        "Berserker_Mode",
+        "Vampire_Energy",
+        "Never_let_done",
+        "RageBaited"
     ],
     "inventory": [
         [
@@ -51,11 +54,19 @@
         ],
         [
             "Pieces S.O.Nathana\u00ebl",
-            4
+            6
         ],
         [
             "Contrat avec Dexter",
             1
+        ],
+        [
+            "Air_blaster_5000",
+            1
+        ],
+        [
+            "Conserves",
+            5
         ]
     ]
 }

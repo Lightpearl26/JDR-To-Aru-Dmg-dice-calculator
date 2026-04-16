@@ -1,0 +1,15 @@
+﻿{
+    "name":  "Paper_Shield",
+    "description":  "Crée un bouclier en papier. Augmente sa constitution",
+    "cost":  10,
+    "effects":  [
+                    {
+                        "target":  "user.con",
+                        "operator":  "bonus",
+                        "formula":  "20"
+                    }
+                ],
+    "targeting":  "single",
+    "runtime_policy":  "maintain",
+    "delay":  2
+}

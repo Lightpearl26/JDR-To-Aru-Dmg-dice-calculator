@@ -1,0 +1,14 @@
+{
+    "name": "Air_blaster_5000",
+    "description": "un air blaster",
+    "modifier": [
+        [
+            "dex",
+            27
+        ],
+        [
+            "agi",
+            -13
+        ]
+    ]
+}

@@ -1,0 +1,14 @@
+{
+    "name": "Sniper",
+    "description": "Un sniper augmentant la DEX mais baissant la AGI",
+    "modifier": [
+        [
+            "dex",
+            30
+        ],
+        [
+            "agi",
+            -20
+        ]
+    ]
+}

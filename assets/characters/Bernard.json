@@ -4,8 +4,8 @@
         "str": 50,
         "dex": 50,
         "con": 50,
-        "wis": 50,
         "int": 50,
+        "wis": 50,
         "cha": 50,
         "per": 50,
         "agi": 50,
@@ -15,13 +15,13 @@
         "mental_health": 100,
         "drug_health": 100
     },
-    "modifiers": {
+    "stats_modifier": {
         "hp": 0,
         "str": 0,
         "dex": 0,
         "con": 0,
-        "wis": 0,
         "int": 0,
+        "wis": 0,
         "cha": 0,
         "per": 0,
         "agi": 0,
@@ -31,5 +31,6 @@
         "mental_health": 0,
         "drug_health": 0
     },
-    "spells": []
+    "spells": [],
+    "inventory": []
 }

@@ -1,0 +1,24 @@
+﻿{
+    "name":  "Entropy Touch",
+    "description":  "Contact décomposeur qui fracture la cible et condense de la dark matter.",
+    "cost":  16,
+    "effects":  [
+                    {
+                        "target":  "target.con",
+                        "operator":  "malus",
+                        "formula":  "diceratio(user.int, 9) + (100 - user.drug_health) / 12"
+                    },
+                    {
+                        "target":  "target.hp",
+                        "operator":  "malus",
+                        "formula":  "8 + diceratio(user.int, 5) + (100 - user.drug_health) / 10 - diceratio(target.con, 4)"
+                    },
+                    {
+                        "target":  "user.drug_health",
+                        "operator":  "malus",
+                        "formula":  "10"
+                    }
+                ],
+    "targeting":  "single",
+    "runtime_policy":  "instant"
+}

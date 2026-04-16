@@ -1,0 +1,19 @@
+﻿{
+    "name":  "Mind Leash",
+    "description":  "Lien télépathique coercitif qui bride l\u0027initiative mentale de la cible.",
+    "cost":  11,
+    "effects":  [
+                    {
+                        "target":  "target.wis",
+                        "operator":  "malus",
+                        "formula":  "diceratio(user.cha, 5) + diceratio(user.int, 4)"
+                    },
+                    {
+                        "target":  "target.int",
+                        "operator":  "malus",
+                        "formula":  "diceratio(user.wis, 4)"
+                    }
+                ],
+    "targeting":  "single",
+    "runtime_policy":  "instant"
+}

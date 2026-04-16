@@ -1,0 +1,20 @@
+﻿{
+    "name":  "Momentum Throne",
+    "description":  "Contrôle absolu de l\u0027inertie : Vincent prend l\u0027ascendant vectoriel.",
+    "cost":  10,
+    "effects":  [
+                    {
+                        "target":  "user.dex",
+                        "operator":  "bonus",
+                        "formula":  "diceratio(user.int, 9)"
+                    },
+                    {
+                        "target":  "user.agi",
+                        "operator":  "bonus",
+                        "formula":  "diceratio(user.wis, 19)"
+                    }
+                ],
+    "targeting":  "single",
+    "runtime_policy":  "maintain",
+    "delay":  3
+}

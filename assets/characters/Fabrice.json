@@ -1,0 +1,43 @@
+﻿{
+    "name": "Fabrice",
+    "stats": {
+        "str": 10,
+        "dex": 100,
+        "con": 200,
+        "int": 100,
+        "wis": 200,
+        "cha": 100,
+        "per": 100,
+        "agi": 200,
+        "luc": 10,
+        "sur": 100,
+        "stamina": 100,
+        "mental_health": 100,
+        "drug_health": 100
+    },
+    "stats_modifier": {
+        "hp": 0,
+        "str": 0,
+        "dex": 0,
+        "con": 0,
+        "int": 0,
+        "wis": 0,
+        "cha": 0,
+        "per": 0,
+        "agi": 0,
+        "luc": 0,
+        "sur": 0,
+        "stamina": 0,
+        "mental_health": 0,
+        "drug_health": 0
+    },
+    "spells": [
+        "AntiMatter_Blast",
+        "Dark_Matter_Dominion",
+        "Black_Wing_Assault",
+        "Entropy_Touch",
+        "Dark_Matter_Drain"
+    ],
+    "inventory": []
+}
+

@@ -1,4 +1,4 @@
-{
+﻿{
     "name": "Robot",
     "stats": {
         "str": 80,
@@ -15,7 +15,7 @@
         "mental_health": 100,
         "drug_health": 100
     },
-    "modifiers": {
+    "stats_modifier": {
         "hp": 0,
         "str": 0,
         "dex": 0,

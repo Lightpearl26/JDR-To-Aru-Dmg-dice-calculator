@@ -1,0 +1,19 @@
+﻿{
+    "name":  "Hunter\u0027s Eye",
+    "description":  "Sauron marque sa proie : suivi parfait et trajectoire optimisée.",
+    "cost":  11,
+    "effects":  [
+                    {
+                        "target":  "user.per",
+                        "operator":  "bonus",
+                        "formula":  "diceratio(user.per, 5)"
+                    },
+                    {
+                        "target":  "target.agi",
+                        "operator":  "malus",
+                        "formula":  "diceratio(user.per, 5)"
+                    }
+                ],
+    "targeting":  "single",
+    "runtime_policy":  "instant"
+}

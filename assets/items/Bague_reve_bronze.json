@@ -1,4 +1,7 @@
-{
-    "name": "Bague reve bronze",
-    "description": "Une bague de rêve en bronze qui permet de faire le rêve stocké a l'interieur (utilisable une fois)."
+﻿{
+    "name":  "Bague reve bronze",
+    "description":  "Une bague de rêve en bronze qui permet de faire le rêve stocké a l\u0027interieur (utilisable une fois).",
+    "modifier":  [
+
+                 ]
 }

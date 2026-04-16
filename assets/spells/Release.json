@@ -1,13 +1,14 @@
-{
-    "name": "Release",
-    "description": "Consomme les points d'aura pour faire de gros dégats autour de lui",
-    "cost": 20,
-    "effects": [
-        {
-            "target": "target",
-            "target_stat": "hp",
-            "effect": "malus",
-            "formula": "(100 - drug_health) / 5 + diceratio(user.int, 20) - diceration(target.wis, 10)"
-        }
-    ]
+﻿{
+    "name":  "Release",
+    "description":  "Consomme les points d\u0027aura pour faire de gros dégats autour de lui",
+    "cost":  7,
+    "effects":  [
+                    {
+                        "target":  "target.hp",
+                        "operator":  "malus",
+                        "formula":  "(100 - user.drug_health)/2 + diceratio(user.int, 10)"
+                    }
+                ],
+    "targeting":  "multi",
+    "runtime_policy":  "instant"
 }

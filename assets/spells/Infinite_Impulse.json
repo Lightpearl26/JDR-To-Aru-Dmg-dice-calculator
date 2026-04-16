@@ -1,0 +1,14 @@
+﻿{
+    "name":  "Infinite Impulse",
+    "description":  "Décharge vectorielle totale qui traverse les défenses conventionnelles.",
+    "cost":  24,
+    "effects":  [
+                    {
+                        "target":  "target.hp",
+                        "operator":  "malus",
+                        "formula":  "diceratio(user.int, 20) + diceratio(user.dex, 11) - diceratio(target.con, 10)"
+                    }
+                ],
+    "targeting":  "single",
+    "runtime_policy":  "instant"
+}

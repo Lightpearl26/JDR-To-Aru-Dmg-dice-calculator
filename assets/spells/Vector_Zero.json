@@ -1,0 +1,19 @@
+﻿{
+    "name":  "Vector Zero",
+    "description":  "Vincent annule les vecteurs d\u0027inertie de la cible puis les inverse instantanément.",
+    "cost":  24,
+    "effects":  [
+                    {
+                        "target":  "target.hp",
+                        "operator":  "malus",
+                        "formula":  "diceratio(user.int, 16) + diceratio(user.dex, 11) - diceratio(target.con, 5)"
+                    },
+                    {
+                        "target":  "target.str",
+                        "operator":  "malus",
+                        "formula":  "diceratio(user.wis, 8)"
+                    }
+                ],
+    "targeting":  "single",
+    "runtime_policy":  "instant"
+}

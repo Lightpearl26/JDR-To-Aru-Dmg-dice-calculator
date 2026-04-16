@@ -1,0 +1,14 @@
+﻿{
+    "name":  "Plaques_tectoNIQUE",
+    "description":  "Utilise un champ magnétique pour écraser tout ce qui se trouve entre ses deux plaques. Paralisie combat entre DEX et AGI",
+    "cost":  15,
+    "effects":  [
+                    {
+                        "target":  "user.hp",
+                        "operator":  "bonus",
+                        "formula":  "0"
+                    }
+                ],
+    "targeting":  "single",
+    "runtime_policy":  "instant"
+}

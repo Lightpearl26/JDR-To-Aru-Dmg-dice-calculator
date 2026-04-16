@@ -1,13 +1,24 @@
-{
-    "name": "AntiMatter Blast",
-    "description": "Lance une boule d'antimatière qui décompose ce qu'elle touche, infligeant des dégâts considérables.",
-    "cost": 20,
-    "effects": [
-        {
-            "target": "target",
-            "target_stat": "hp",
-            "effect": "malus",
-            "formula": "diceratio(user.int, 10) - diceratio(target.wis, 5)"
-        }
-    ]
+﻿{
+    "name":  "AntiMatter Blast",
+    "description":  "Lance une boule d\u0027antimatière qui entame la cible et convertit sa stabilité en dark matter.",
+    "cost":  14,
+    "effects":  [
+                    {
+                        "target":  "target.hp",
+                        "operator":  "malus",
+                        "formula":  "10 + diceratio(user.int, 5) - diceratio(target.wis, 3)"
+                    },
+                    {
+                        "target":  "target.con",
+                        "operator":  "malus",
+                        "formula":  "diceratio(user.int, 6) + (100 - user.drug_health) / 25"
+                    },
+                    {
+                        "target":  "user.drug_health",
+                        "operator":  "malus",
+                        "formula":  "10"
+                    }
+                ],
+    "targeting":  "single",
+    "runtime_policy":  "instant"
 }

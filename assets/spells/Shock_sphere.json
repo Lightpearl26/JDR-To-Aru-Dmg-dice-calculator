@@ -1,13 +1,15 @@
-{
-    "name": "Shock Sphere",
-    "description": "Dure 1 tour, 5 stamina par tour. Si une personne entre dans le rayon, jet de sagesse pour éviter la paralysie (à gérer par le MJ). Pare les dégâts de projectiles à hauteur de (Sagesse // 10 - Intelligence // 10). Rayon : 3m autour de l'utilisateur.",
-    "cost": 5,
-    "effects": [
-        {
-            "target": "user",
-            "target_stat": "hp",
-            "effect": "bonus",
-            "formula": "(user.wis / 10) + diceratio(user.int, 10)"
-        }
-    ]
+﻿{
+    "name":  "Shock Sphere",
+    "description":  "Dure 1 tour. Si une personne entre dans le rayon, jet de sagesse pour éviter la paralysie (à gérer par le MJ). Pare les dégâts de projectiles à hauteur de (Sagesse // 10 - Intelligence // 10). Rayon : 3m autour de l\u0027utilisateur.",
+    "cost":  10,
+    "effects":  [
+                    {
+                        "target":  "user.hp",
+                        "operator":  "bonus",
+                        "formula":  "(user.wis / 10) + diceratio(user.int, 5)"
+                    }
+                ],
+    "targeting":  "multi",
+    "runtime_policy":  "maintain",
+    "delay":  1
 }

@@ -1,4 +1,7 @@
-{
-    "name": "Kinder Maxi",
-    "description": "Un grand chocolat fourré de lait et de noisettes. Restaure 10 points de vie."
+﻿{
+    "name":  "Kinder Maxi",
+    "description":  "Un grand chocolat fourré de lait et de noisettes. Restaure 10 points de vie.",
+    "modifier":  [
+
+                 ]
 }

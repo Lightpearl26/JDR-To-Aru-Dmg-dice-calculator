@@ -1,0 +1,21 @@
+{
+  "name": "yolo",
+  "stats": {
+    "str": 50,
+    "dex": 50,
+    "int": 50,
+    "agi": 50,
+    "con": 50,
+    "wis": 50,
+    "cha": 50,
+    "per": 50,
+    "luc": 50,
+    "sur": 50,
+    "mental_health": 100,
+    "drug_health": 100,
+    "stamina": 100
+  },
+  "stats_modifier": {},
+  "inventory": {},
+  "spells": []
+}

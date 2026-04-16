@@ -1,13 +1,14 @@
-{
-    "name": "Railgun",
-    "description": "Dexter utilise son airsoft pour tirer un projectile à grande vitesse sur une cible",
-    "cost": 20,
-    "effects": [
-        {
-            "target": "target",
-            "target_stat": "hp",
-            "effect": "malus",
-            "formula": "5 + diceratio(user.int, 20) - diceratio(target.wis, 10)"
-        }
-    ]
+﻿{
+    "name":  "Railgun",
+    "description":  "Dexter tire un projectile électromagnétique en ligne, capable de traverser plusieurs cibles.",
+    "cost":  24,
+    "effects":  [
+                    {
+                        "target":  "target.hp",
+                        "operator":  "malus",
+                        "formula":  "10 + diceratio(user.int, 20) + diceratio(user.dex, 11) - diceratio(target.wis, 20)"
+                    }
+                ],
+    "targeting":  "multi",
+    "runtime_policy":  "instant"
 }

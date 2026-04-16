@@ -1,0 +1,19 @@
+﻿{
+    "name":  "Faille_Spaciale",
+    "description":  "Lumine tord l\u0027espace autour de sa cible provoquant d\u0027immense dégats et baissant l\u0027agilité de sa cible. Sa cible doit d\u0027abord se localiser dans la dimension personnelle de Lumine.",
+    "cost":  20,
+    "effects":  [
+                    {
+                        "target":  "target.hp",
+                        "operator":  "malus",
+                        "formula":  "diceratio(user.int, 23) - diceratio(target.con, 5)"
+                    },
+                    {
+                        "target":  "target.agi",
+                        "operator":  "malus",
+                        "formula":  "user.int / 20 + diceratio(user.wis, 5)"
+                    }
+                ],
+    "targeting":  "single",
+    "runtime_policy":  "instant"
+}

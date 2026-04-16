@@ -1,6 +1,10 @@
-{
-    "name": "Radar Humain",
-    "description": "Detecte si il peu se faire atteindre ce tour ci",
-    "cost": 5,
-    "effects": []
+﻿{
+    "name":  "Radar Humain",
+    "description":  "Detecte si il peu se faire atteindre ce tour ci",
+    "cost":  5,
+    "effects":  [
+
+                ],
+    "targeting":  "single",
+    "runtime_policy":  "instant"
 }

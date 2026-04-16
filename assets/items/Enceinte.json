@@ -1,4 +1,7 @@
-{
-    "name": "Enceinte",
-    "description": "Une enceinte portable qui peut diffuser de la musique. Elle n'a pas d'effet en combat."
+﻿{
+    "name":  "Enceinte",
+    "description":  "Une enceinte portable qui peut diffuser de la musique. Elle n\u0027a pas d\u0027effet en combat.",
+    "modifier":  [
+
+                 ]
 }

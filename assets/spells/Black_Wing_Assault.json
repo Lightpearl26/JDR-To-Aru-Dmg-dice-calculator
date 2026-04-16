@@ -1,0 +1,24 @@
+﻿{
+    "name":  "Black Wing Assault",
+    "description":  "Fabrice matérialise des ailes de dark matter et les déchaîne en rafale sur tous les ennemis dans la zone, en brûlant une partie de sa réserve.",
+    "cost":  20,
+    "effects":  [
+                    {
+                        "target":  "target.hp",
+                        "operator":  "malus",
+                        "formula":  "diceratio(user.sur, 10) + diceratio(user.int, 7) + ((100 - user.drug_health) / 10) * 7 - diceratio(target.con, 4)"
+                    },
+                    {
+                        "target":  "target.con",
+                        "operator":  "malus",
+                        "formula":  "diceratio(user.int, 8) + (100 - user.drug_health) / 25"
+                    },
+                    {
+                        "target":  "user.drug_health",
+                        "operator":  "bonus",
+                        "formula":  "(100 - user.drug_health) / 2"
+                    }
+                ],
+    "targeting":  "multi",
+    "runtime_policy":  "instant"
+}

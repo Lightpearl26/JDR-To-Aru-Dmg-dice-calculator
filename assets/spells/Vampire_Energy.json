@@ -1,0 +1,19 @@
+﻿{
+    "name":  "Vampire_Energy",
+    "description":  "Hella baisse le morale d\u0027une personne en le frappant ce qui lui procure de la satisfaction\n(dégtas Physiques (strike) et stamina vamp)",
+    "cost":  5,
+    "effects":  [
+                    {
+                        "target":  "user.stamina",
+                        "operator":  "bonus",
+                        "formula":  "15"
+                    },
+                    {
+                        "target":  "target.stamina",
+                        "operator":  "malus",
+                        "formula":  "15"
+                    }
+                ],
+    "targeting":  "single",
+    "runtime_policy":  "instant"
+}

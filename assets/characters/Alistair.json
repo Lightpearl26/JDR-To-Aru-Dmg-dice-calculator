@@ -1,21 +1,21 @@
 {
     "name": "Alistair",
     "stats": {
-        "str": 113,
-        "dex": 60,
-        "con": 110,
-        "int": 60,
+        "str": 118,
+        "dex": 30,
+        "con": 120,
+        "int": 100,
         "wis": 110,
         "cha": 20,
         "per": 20,
-        "agi": 60,
+        "agi": 65,
         "luc": 25,
         "sur": 50,
         "stamina": 100,
         "mental_health": 100,
         "drug_health": 100
     },
-    "modifiers": {
+    "stats_modifier": {
         "hp": 0,
         "str": 0,
         "dex": 0,
@@ -36,7 +36,8 @@
         "Thunder fist",
         "Electric_boost",
         "Capacitor",
-        "Release"
+        "Release",
+        "Gardien_de_la_Friction"
     ],
     "inventory": [
         [
@@ -45,6 +46,10 @@
         ],
         [
             "Matraque",
+            1
+        ],
+        [
+            "cone_de_chantier",
             1
         ],
         [

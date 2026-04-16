@@ -1,0 +1,14 @@
+﻿{
+    "name":  "Precise_weakpoint",
+    "description":  "Utilise une de ses dagues pour la téléporter sur un point faible de l\u0027ennemi",
+    "cost":  20,
+    "effects":  [
+                    {
+                        "target":  "target.hp",
+                        "operator":  "malus",
+                        "formula":  "7 + diceratio(user.agi, 30) - diceratio(target.agi, 20)"
+                    }
+                ],
+    "targeting":  "single",
+    "runtime_policy":  "instant"
+}

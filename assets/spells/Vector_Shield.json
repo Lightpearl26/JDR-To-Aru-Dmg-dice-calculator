@@ -1,0 +1,24 @@
+﻿{
+    "name":  "Vector Shield",
+    "description":  "Vincent redirige les vecteurs d\u0027impact autour de lui et devient quasi intouchable.",
+    "cost":  24,
+    "effects":  [
+                    {
+                        "target":  "user.hp",
+                        "operator":  "bonus",
+                        "formula":  "20"
+                    },
+                    {
+                        "target":  "user.con",
+                        "operator":  "bonus",
+                        "formula":  "100"
+                    },
+                    {
+                        "target":  "user.wis",
+                        "operator":  "bonus",
+                        "formula":  "100"
+                    }
+                ],
+    "targeting":  "single",
+    "runtime_policy":  "instant"
+}

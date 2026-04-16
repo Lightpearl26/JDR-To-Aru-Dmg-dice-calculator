@@ -1,0 +1,15 @@
+﻿{
+    "name":  "Intant_rush",
+    "description":  "Permet d\u0027effectuer une action supllémentaire après utilisation du sort augmente la force sur ce tour",
+    "cost":  15,
+    "effects":  [
+                    {
+                        "target":  "user.str",
+                        "operator":  "bonus",
+                        "formula":  "30"
+                    }
+                ],
+    "targeting":  "single",
+    "runtime_policy":  "maintain",
+    "delay":  1
+}

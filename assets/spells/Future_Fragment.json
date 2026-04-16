@@ -1,0 +1,14 @@
+﻿{
+    "name":  "Future Fragment",
+    "description":  "Un éclat de futur frappe la cible avant même qu\u0027elle ne réagisse.",
+    "cost":  16,
+    "effects":  [
+                    {
+                        "target":  "target.hp",
+                        "operator":  "malus",
+                        "formula":  "diceratio(user.wis, 9) + diceratio(user.per, 5) - diceratio(target.luc, 4)"
+                    }
+                ],
+    "targeting":  "single",
+    "runtime_policy":  "instant"
+}

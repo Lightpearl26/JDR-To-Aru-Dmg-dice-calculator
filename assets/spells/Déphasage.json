@@ -1,0 +1,14 @@
+﻿{
+    "name":  "Déphasage",
+    "description":  "Lumine entre en déphasage avec l\u0027espace qui l\u0027entoure le rendant intouchable pendant un tour.",
+    "cost":  10,
+    "effects":  [
+                    {
+                        "target":  "user.hp",
+                        "operator":  "bonus",
+                        "formula":  "0"
+                    }
+                ],
+    "targeting":  "single",
+    "runtime_policy":  "instant"
+}

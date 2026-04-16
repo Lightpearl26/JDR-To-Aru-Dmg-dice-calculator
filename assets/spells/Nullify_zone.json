@@ -1,6 +1,11 @@
-{
-    "name": "Nullify zone",
-    "description": "Annule les dégats physiques dans une zone pendant 1 tour",
-    "cost": 10,
-    "effects": []
+﻿{
+    "name":  "Nullify zone",
+    "description":  "Annule les dégats physiques dans une zone pendant 1 tour",
+    "cost":  10,
+    "effects":  [
+
+                ],
+    "targeting":  "multi",
+    "runtime_policy":  "maintain",
+    "delay":  1
 }

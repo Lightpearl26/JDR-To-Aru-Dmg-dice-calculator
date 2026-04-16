@@ -1,0 +1,19 @@
+﻿{
+    "name":  "Neural Overclock",
+    "description":  "Surcharge électromagnétique du cortex : Julie accélère ses calculs et brouille les capteurs ennemis.",
+    "cost":  10,
+    "effects":  [
+                    {
+                        "target":  "user.int",
+                        "operator":  "bonus",
+                        "formula":  "diceratio(user.int, 5)"
+                    },
+                    {
+                        "target":  "target.per",
+                        "operator":  "malus",
+                        "formula":  "diceratio(user.int, 5)"
+                    }
+                ],
+    "targeting":  "single",
+    "runtime_policy":  "instant"
+}

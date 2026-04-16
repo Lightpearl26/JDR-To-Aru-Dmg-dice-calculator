@@ -1,0 +1,10 @@
+{
+    "name": "Marteau_plasmique",
+    "description": "marteau provoquant des décharge electriques lors d'un coup. A cause d'un défaut de conception la décharge se lance seulement sur l'utilisateur (-10HP)",
+    "modifier": [
+        [
+            "str",
+            15
+        ]
+    ]
+}

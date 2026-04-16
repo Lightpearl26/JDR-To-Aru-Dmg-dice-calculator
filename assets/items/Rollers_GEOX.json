@@ -1,0 +1,10 @@
+{
+    "name": "Rollers_GEOX",
+    "description": "AGI + 80 mais joue un tour sur deux",
+    "modifier": [
+        [
+            "agi",
+            80
+        ]
+    ]
+}

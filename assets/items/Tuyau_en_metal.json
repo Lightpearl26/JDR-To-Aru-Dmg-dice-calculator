@@ -1,7 +1,10 @@
 {
-    "name": "Tuyau en métal",
-    "description": "Un tuyau en métal robuste, souvent utilisé pour la plomberie ou comme arme improvisée. (+20 str)",
+    "name": "Tuyau_en_métal",
+    "description": "Un tuyau en métal robuste orné de clou (+34 STR)",
     "modifier": [
-        ["str", 20]
+        [
+            "str",
+            34
+        ]
     ]
 }

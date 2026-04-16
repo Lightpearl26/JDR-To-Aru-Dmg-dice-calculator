@@ -1,0 +1,45 @@
+﻿{
+    "name": "Vincent",
+    "stats": {
+        "str": 50,
+        "dex": 150,
+        "con": 50,
+        "int": 250,
+        "wis": 50,
+        "cha": 150,
+        "per": 150,
+        "agi": 150,
+        "luc": 100,
+        "sur": 100,
+        "stamina": 100,
+        "mental_health": 100,
+        "drug_health": 100
+    },
+    "stats_modifier": {
+        "hp": 0,
+        "str": 0,
+        "dex": 0,
+        "con": 0,
+        "int": 0,
+        "wis": 0,
+        "cha": 0,
+        "per": 0,
+        "agi": 0,
+        "luc": 0,
+        "sur": 0,
+        "stamina": 0,
+        "mental_health": 0,
+        "drug_health": 0
+    },
+    "spells": [
+        "Vector_Shield",
+        "Vector_Zero",
+        "Axial_Reversal",
+        "Momentum_Throne",
+        "Infinite_Impulse",
+        "Augmented_Gravity_Field",
+        "Vector_Regeneration"
+    ],
+    "inventory": []
+}
+

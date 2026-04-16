@@ -1,4 +1,7 @@
-{
-    "name": "Parapluie Mickey",
-    "description": "Un parapluie à l'effigie de Mickey Mouse. Qui sait à quoi il pourrait servir ..."
+﻿{
+    "name":  "Parapluie Mickey",
+    "description":  "Un parapluie à l\u0027effigie de Mickey Mouse. Qui sait à quoi il pourrait servir ...",
+    "modifier":  [
+
+                 ]
 }

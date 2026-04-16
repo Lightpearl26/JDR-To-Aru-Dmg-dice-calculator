@@ -1,0 +1,19 @@
+﻿{
+    "name":  "RageBaited",
+    "description":  "Hella entre en mode berserk, ne peut utiliser que Energy Vampire mais boost sa force et sa constitution. Consomme 20 de stamina par tour. S\u0027arrête lors d\u0027un kill ou de plus de stamina",
+    "cost":  20,
+    "effects":  [
+                    {
+                        "target":  "user.str",
+                        "operator":  "bonus",
+                        "formula":  "user.str / 2"
+                    },
+                    {
+                        "target":  "user.con",
+                        "operator":  "bonus",
+                        "formula":  "user.con / 2"
+                    }
+                ],
+    "targeting":  "single",
+    "runtime_policy":  "maintain"
+}

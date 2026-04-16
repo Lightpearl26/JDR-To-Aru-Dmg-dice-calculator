@@ -1,4 +1,7 @@
-{
-    "name": "Carte numerique Charles",
-    "description": "Une carte numérique contenant des informations sur Charles."
+﻿{
+    "name":  "Carte numerique Charles",
+    "description":  "Une carte numérique contenant des informations sur Charles.",
+    "modifier":  [
+
+                 ]
 }

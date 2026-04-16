@@ -1,0 +1,19 @@
+﻿{
+    "name":  "Augmented Gravity Field",
+    "description":  "Vincent amplifie brutalement le champ gravitationnel local, écrase les cibles et sabote lourdement leur mobilité.",
+    "cost":  24,
+    "effects":  [
+                    {
+                        "target":  "target.hp",
+                        "operator":  "malus",
+                        "formula":  "diceratio(user.int, 18) + diceratio(user.wis, 12) - diceratio(target.con, 8)"
+                    },
+                    {
+                        "target":  "target.agi",
+                        "operator":  "malus",
+                        "formula":  "15 + diceratio(user.int, 18)"
+                    }
+                ],
+    "targeting":  "multi",
+    "runtime_policy":  "instant"
+}

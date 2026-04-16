@@ -1,0 +1,41 @@
+{
+    "name": "Chloe",
+    "stats": {
+        "str": 50,
+        "dex": 50,
+        "con": 50,
+        "int": 200,
+        "wis": 200,
+        "cha": 250,
+        "per": 100,
+        "agi": 100,
+        "luc": 10,
+        "sur": 100,
+        "stamina": 100,
+        "mental_health": 100,
+        "drug_health": 100
+    },
+    "stats_modifier": {
+        "hp": 0,
+        "str": 0,
+        "dex": 0,
+        "con": 0,
+        "int": 0,
+        "wis": 0,
+        "cha": 0,
+        "per": 0,
+        "agi": 0,
+        "luc": 0,
+        "sur": 0,
+        "stamina": 0,
+        "mental_health": 0,
+        "drug_health": 0
+    },
+    "spells": [
+        "Mass_Suggestion",
+        "Mind_Leash",
+        "Memory_Siphon",
+        "Thought_Drown"
+    ],
+    "inventory": []
+}

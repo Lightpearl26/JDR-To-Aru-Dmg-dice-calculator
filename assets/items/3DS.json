@@ -1,4 +1,7 @@
-{
-    "name": "3DS",
-    "description": "Une console portable de Nintendo. Permet de jouer à des jeux vidéo n'importe où."
+﻿{
+    "name":  "3DS",
+    "description":  "Une console portable de Nintendo. Permet de jouer à des jeux vidéo n\u0027importe où.",
+    "modifier":  [
+
+                 ]
 }

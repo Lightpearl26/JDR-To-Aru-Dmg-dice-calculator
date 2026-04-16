@@ -1,0 +1,24 @@
+﻿{
+    "name":  "Snow_Storm",
+    "description":  "crée une zone de temp^ête de neige qui inflige des dégats et baisse la dexterité et la perception",
+    "cost":  15,
+    "effects":  [
+                    {
+                        "target":  "target.dex",
+                        "operator":  "malus",
+                        "formula":  "10 + diceratio(user.int, 10)"
+                    },
+                    {
+                        "target":  "target.hp",
+                        "operator":  "malus",
+                        "formula":  "5 + diceratio(user.int, 15) - diceratio(target.wis, 10)"
+                    },
+                    {
+                        "target":  "target.agi",
+                        "operator":  "malus",
+                        "formula":  "10 + diceratio(user.int, 10)"
+                    }
+                ],
+    "targeting":  "multi",
+    "runtime_policy":  "instant"
+}

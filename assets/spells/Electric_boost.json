@@ -1,19 +1,19 @@
-{
-    "name": "Electric Boost",
-    "description": "Julie boost ses connexions neuronales avec une décharge électrique, augmentant son intelligence mais baissant sa survie",
-    "cost": 10,
-    "effects": [
-        {
-            "target": "user",
-            "target_stat": "int",
-            "effect": "bonus",
-            "formule": "20"
-        },
-        {
-            "target": "user",
-            "target_stat": "sur",
-            "effect": "malus",
-            "formule": "10"
-        }
-    ]
+﻿{
+    "name":  "Electric Boost",
+    "description":  "Julie boost ses connexions neuronales avec une décharge électrique, augmentant son intelligence mais baissant sa survie",
+    "cost":  10,
+    "effects":  [
+                    {
+                        "target":  "user.int",
+                        "operator":  "bonus",
+                        "formula":  "20"
+                    },
+                    {
+                        "target":  "user.sur",
+                        "operator":  "malus",
+                        "formula":  "10"
+                    }
+                ],
+    "targeting":  "single",
+    "runtime_policy":  "instant"
 }

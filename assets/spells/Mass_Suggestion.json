@@ -1,0 +1,19 @@
+﻿{
+    "name":  "Mass Suggestion",
+    "description":  "Big Sister impose une impulsion télépathique et fracture la volonté de la cible.",
+    "cost":  24,
+    "effects":  [
+                    {
+                        "target":  "target.wis",
+                        "operator":  "malus",
+                        "formula":  "diceratio(user.cha, 25) + diceratio(user.int, 14)"
+                    },
+                    {
+                        "target":  "target.cha",
+                        "operator":  "malus",
+                        "formula":  "diceratio(user.wis, 18)"
+                    }
+                ],
+    "targeting":  "single",
+    "runtime_policy":  "instant"
+}

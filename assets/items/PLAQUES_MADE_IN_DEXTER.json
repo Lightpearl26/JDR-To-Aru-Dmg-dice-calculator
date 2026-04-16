@@ -1,0 +1,10 @@
+{
+    "name": "PLAQUES_MADE_IN_DEXTER",
+    "description": "tout dans le nom",
+    "modifier": [
+        [
+            "dex",
+            -10
+        ]
+    ]
+}

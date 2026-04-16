@@ -1,13 +1,14 @@
-{
-    "name": "Blessing area",
-    "description": "Bénit une zone, soigne les alliés dans la zone",
-    "cost": 10,
-    "effects": [
-        {
-            "target": "target",
-            "target_stat": "hp",
-            "effect": "bonus",
-            "formula": "5 + (user.hp / 10) + diceratio(user.sur, 2)"
-        }
-    ]
+﻿{
+    "name":  "Blessing area",
+    "description":  "Bénit une zone, soigne les alliés dans la zone",
+    "cost":  12,
+    "effects":  [
+                    {
+                        "target":  "target.hp",
+                        "operator":  "bonus",
+                        "formula":  "5 + (user.hp / 10) + diceratio(user.sur, 1)"
+                    }
+                ],
+    "targeting":  "multi",
+    "runtime_policy":  "instant"
 }

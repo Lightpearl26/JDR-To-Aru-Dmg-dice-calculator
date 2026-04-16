@@ -1,13 +1,15 @@
-{
-    "name": "Capacitor",
-    "description": "Crée un bouclier magnétique qui augmenta sa constitution. Si il est touché par un ennemi avec le capacitor activé. Il génère un point d'aura",
-    "cost": 5,
-    "effects": [
-        {
-            "target": "user",
-            "target_stat": "con",
-            "effect": "bonus",
-            "formula": "user.con / 10 + diceratio(user.int, 10)"
-        }
-    ]
+﻿{
+    "name":  "Capacitor",
+    "description":  "Crée un bouclier magnétique qui augmenta sa constitution. Si il est touché par un ennemi avec le capacitor activé. Il génère un point d\u0027aura",
+    "cost":  9,
+    "effects":  [
+                    {
+                        "target":  "user.con",
+                        "operator":  "bonus",
+                        "formula":  "user.con / 10 + diceratio(user.int, 5)"
+                    }
+                ],
+    "targeting":  "single",
+    "runtime_policy":  "maintain",
+    "delay":  3
 }

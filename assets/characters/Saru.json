@@ -4,18 +4,18 @@
         "str": 40,
         "dex": 95,
         "con": 40,
-        "int": 95,
+        "int": 105,
         "wis": 75,
         "cha": 45,
-        "per": 60,
+        "per": 70,
         "agi": 30,
-        "luc": 75,
+        "luc": 85,
         "sur": 70,
         "stamina": 100,
         "mental_health": 100,
         "drug_health": 100
     },
-    "modifiers": {
+    "stats_modifier": {
         "hp": 0,
         "str": 0,
         "dex": 0,
@@ -72,6 +72,10 @@
         ],
         [
             "Sceptre du pouvoir",
+            1
+        ],
+        [
+            "Gant_de_Thanosux",
             1
         ]
     ]
