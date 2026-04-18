@@ -135,13 +135,13 @@ class _ClientWorker(QThread):
     damage_roll_requested = pyqtSignal(dict)  # payload DAMAGE_ROLL_REQUEST
     error_occurred = pyqtSignal(str)
 
-    def __init__(self, host: str, port: int, username: str, password: str, entity_name: str) -> None:
+    def __init__(self, host: str, port: int, username: str, password: str, character_name: str) -> None:
         super().__init__()
         self._host = host
         self._port = port
         self._username = username
         self._password = password
-        self._entity_name = entity_name
+        self._character_name = character_name
         self._loop: asyncio.AbstractEventLoop | None = None
         self._client: Client | None = None
         self._stop_event: asyncio.Event | None = None
@@ -163,7 +163,7 @@ class _ClientWorker(QThread):
             port=self._port,
             username=self._username,
             password=self._password,
-            character_name=self._entity_name,
+            character_name=self._character_name,
             tls_insecure=True,
         )
         try:
@@ -1427,7 +1427,7 @@ class PlayerWindow(QMainWindow):
     def connect_to_server(self, host: str, port: int, password: str) -> None:
         if self._worker and self._worker.isRunning():
             return
-        self._worker = _ClientWorker(host, port, self._username, password, self._entity.name)
+        self._worker = _ClientWorker(host, port, self._username, password, self._entity.character.name)
         self._worker.connected.connect(self._on_connected)
         self._worker.disconnected.connect(self._on_disconnected)
         self._worker.auth_ok.connect(self._on_auth_ok)
@@ -1710,6 +1710,7 @@ class PlayerWindow(QMainWindow):
         self._port = reconnect_dlg.port
         self._username = reconnect_dlg.username
         self._password = reconnect_dlg.password
+        self._entity.name = self._username
 
         _save_player_settings(
             {
@@ -1764,7 +1765,7 @@ def main() -> None:
         )
         sys.exit(1)
 
-    entity = Entity(name=dlg.char_name, character=char)
+    entity = Entity(name=dlg.username, character=char)
 
     win = PlayerWindow(
         entity,

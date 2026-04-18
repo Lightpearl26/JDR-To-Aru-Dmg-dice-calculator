@@ -1,0 +1,8 @@
+{
+  "name": "invisibility",
+  "cost": 10,
+  "description": "Rend le lanceur invisible (10 stamina par tour)",
+  "targeting": "single",
+  "runtime_policy": "maintain",
+  "effects": []
+}

@@ -40,6 +40,8 @@ from PyQt6.QtWidgets import (
     QApplication,
     QComboBox,
     QDialog,
+    QDialogButtonBox,
+    QFormLayout,
     QFrame,
     QHBoxLayout,
     QLabel,
@@ -62,11 +64,16 @@ from PyQt6.QtWidgets import (
 
 from libs.character import Character, Entity
 from libs.dice import Dice
+from libs.item import Item
+from libs.spells.spell_def import Spell, Effect, Formula
 from libs.server.server import Server
 from libs.server.__main__ import start_vps_relay, stop_vps_relay
 from libs.net.protocol import ChatMessage, CommandMessage
 from libs.net.state_sync import serialize_entity_state
 from libs.gui.entity_card import EntityCard
+from libs.gui.character_card import CharacterCard
+from libs.gui.item_card import ItemCard
+from libs.gui.spell_card import SpellCard
 from libs.gui.entity_sheet import EntitySheet
 
 
@@ -227,7 +234,7 @@ class _ServerWorker(QThread):
     stopped              = pyqtSignal()
     client_joined        = pyqtSignal(str)         # username
     client_left          = pyqtSignal(str)         # username
-    entity_registered    = pyqtSignal(str)         # entity_name (auto-load côté MJ)
+    entity_registered    = pyqtSignal(str, str)    # entity_name, character_name (auto-load côté MJ)
     spell_request_received = pyqtSignal(dict)      # spell request dict
     attack_request_received = pyqtSignal(dict)     # attack request dict
     damage_roll_result_received = pyqtSignal(dict) # damage roll result dict
@@ -293,7 +300,7 @@ class _ServerWorker(QThread):
                 self.relay_endpoint.emit("")
 
         known: set[str] = set()
-        known_entities: set[tuple[str, str]] = set()  # (username, entity_name)
+        known_entities: set[tuple[str, str, str]] = set()  # (username, entity_name, character_name)
         while not self._stop_event.is_set():
             # Clients snapshot
             current = set(self._server.connected_clients.keys())
@@ -320,12 +327,13 @@ class _ServerWorker(QThread):
             for session in list(self._server.connected_clients.values()):
                 if session.bound_entity:
                     entity_name = str(session.bound_entity).strip()
+                    character_name = str(getattr(session, "bound_character", "") or "").strip()
                     if entity_name:
-                        key = (session.username, entity_name)
+                        key = (session.username, entity_name, character_name)
                         current_entities.add(key)
                         # Émettre signal si c'est une nouvelle entité
                         if key not in known_entities:
-                            self.entity_registered.emit(entity_name)
+                            self.entity_registered.emit(entity_name, character_name)
             known_entities = current_entities
 
             # Drain spell requests from all sessions
@@ -444,6 +452,38 @@ class _ServerWorker(QThread):
             return bool(future.result(timeout=1.5))
         except Exception:
             return False
+
+    def disconnect_clients_bound_to_entity(self, entity_name: str) -> list[str]:
+        """Deconnecte les clients lies a une entite et renvoie les usernames impactes."""
+        if self._loop is None or self._server is None:
+            return []
+
+        entity_name = str(entity_name).strip()
+        if not entity_name:
+            return []
+
+        async def _do() -> list[str]:
+            to_close: list[tuple[str, object]] = []
+            for username, session in list(self._server.connected_clients.items()):
+                bound = str(session.bound_entity or "").strip()
+                if bound == entity_name:
+                    to_close.append((username, session))
+
+            disconnected: list[str] = []
+            for username, session in to_close:
+                try:
+                    await session.close()
+                except Exception:
+                    pass
+                self._server.connected_clients.pop(username, None)
+                disconnected.append(username)
+            return disconnected
+
+        future = asyncio.run_coroutine_threadsafe(_do(), self._loop)
+        try:
+            return list(future.result(timeout=2.0))
+        except Exception:
+            return []
 
     def broadcast_assets_files(self, categories: list[str] | None = None) -> None:
         """Envoie les fichiers JSON d'assets aux joueurs (sync fichiers réelle)."""
@@ -884,6 +924,504 @@ class _CentralArea(QWidget):
             self.setStyleSheet(f"background:{_APP_BG};")
             self._build_ui()
             self._refresh_list()
+
+        class _AssetCreationDialog(QDialog):
+            """Formulaire de creation/edition d'une ressource avec champs specifiques."""
+
+            def __init__(
+                self,
+                category: str,
+                parent: QWidget | None = None,
+                mode: str = "create",
+                file_name: str = "",
+                initial_payload: dict | None = None,
+            ) -> None:
+                super().__init__(parent)
+                self._category = str(category).strip()
+                self._mode = str(mode).strip() or "create"
+                self._file_name_edited = False
+                self.setWindowTitle("Modifier la ressource" if self._mode == "edit" else "Nouvelle ressource")
+                self.setModal(True)
+                self.setMinimumWidth(520)
+                self.setStyleSheet(f"QDialog {{ background:{_APP_BG}; color:{_TEXT_PRIMARY}; }}")
+
+                root = QVBoxLayout(self)
+                root.setContentsMargins(12, 12, 12, 12)
+                root.setSpacing(10)
+
+                top_form = QFormLayout()
+                top_form.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
+                top_form.setFormAlignment(Qt.AlignmentFlag.AlignTop)
+                top_form.setSpacing(8)
+
+                self._name_edit = QLineEdit()
+                self._name_edit.setPlaceholderText("Nom de la ressource")
+                self._name_edit.textChanged.connect(self._on_name_changed)
+                top_form.addRow("Nom :", self._name_edit)
+
+                self._file_edit = QLineEdit(file_name or "nouvelle_ressource.json")
+                self._file_edit.textEdited.connect(self._on_file_edited)
+                top_form.addRow("Fichier :", self._file_edit)
+
+                root.addLayout(top_form)
+
+                self._details_container = QFrame()
+                self._details_container.setStyleSheet(
+                    f"QFrame {{ background:#182030; border:1px solid {_PANEL_BORDER}; border-radius:6px; }}"
+                )
+                self._details_layout = QVBoxLayout(self._details_container)
+                self._details_layout.setContentsMargins(10, 10, 10, 10)
+                self._details_layout.setSpacing(8)
+                root.addWidget(self._details_container)
+
+                self._build_category_fields()
+
+                if isinstance(initial_payload, dict):
+                    self.load_payload(initial_payload)
+
+                buttons = QDialogButtonBox(
+                    QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel
+                )
+                buttons.accepted.connect(self.accept)
+                buttons.rejected.connect(self.reject)
+                root.addWidget(buttons)
+
+            @staticmethod
+            def _sanitize_file_name(raw: str) -> str:
+                text = str(raw).strip().replace(" ", "_")
+                allowed = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.-"
+                cleaned = "".join(ch for ch in text if ch in allowed)
+                if not cleaned:
+                    cleaned = "nouvelle_ressource"
+                if not cleaned.endswith(".json"):
+                    cleaned += ".json"
+                return cleaned
+
+            def _on_name_changed(self, text: str) -> None:
+                if self._file_name_edited:
+                    return
+                self._file_edit.setText(self._sanitize_file_name(text or "nouvelle_ressource"))
+
+            def _on_file_edited(self, _text: str) -> None:
+                self._file_name_edited = True
+
+            def _new_spin(self, value: int, minimum: int = 0, maximum: int = 999) -> QSpinBox:
+                spin = QSpinBox()
+                spin.setRange(minimum, maximum)
+                spin.setValue(int(value))
+                spin.setStyleSheet(
+                    f"QSpinBox {{ background:#111826; color:{_TEXT_PRIMARY}; border:1px solid {_PANEL_BORDER}; border-radius:4px; padding:2px 6px; }}"
+                )
+                return spin
+
+            def _build_category_fields(self) -> None:
+                title = QLabel(f"Paramètres ({self._category})")
+                title.setStyleSheet(f"color:{_TEXT_PRIMARY}; font-weight:bold; background:transparent;")
+                self._details_layout.addWidget(title)
+
+                if self._category == "characters":
+                    self._char_stats_modifier_payload: dict[str, int] = {}
+                    self._char_stats: dict[str, QSpinBox] = {}
+                    grid = QHBoxLayout()
+                    left = QFormLayout(); right = QFormLayout()
+                    left.setSpacing(6); right.setSpacing(6)
+                    stat_defaults = {
+                        "str": 50, "dex": 50, "int": 50, "agi": 50, "con": 50,
+                        "wis": 50, "cha": 50, "per": 50, "luc": 50, "sur": 50,
+                        "mental_health": 100, "drug_health": 100, "stamina": 100,
+                    }
+                    keys = list(stat_defaults.keys())
+                    split_idx = (len(keys) + 1) // 2
+                    for key in keys[:split_idx]:
+                        spin = self._new_spin(stat_defaults[key], 0, 999)
+                        self._char_stats[key] = spin
+                        left.addRow(f"{key} :", spin)
+                    for key in keys[split_idx:]:
+                        spin = self._new_spin(stat_defaults[key], 0, 999)
+                        self._char_stats[key] = spin
+                        right.addRow(f"{key} :", spin)
+                    grid.addLayout(left, 1)
+                    grid.addLayout(right, 1)
+                    self._details_layout.addLayout(grid)
+
+                    spells_title = QLabel("Spells")
+                    spells_title.setStyleSheet(f"color:{_TEXT_PRIMARY}; font-weight:bold; background:transparent;")
+                    self._details_layout.addWidget(spells_title)
+
+                    self._char_spell_rows = QVBoxLayout()
+                    self._char_spell_rows.setSpacing(4)
+                    self._details_layout.addLayout(self._char_spell_rows)
+
+                    add_spell_btn = QPushButton("+ Ajouter spell")
+                    add_spell_btn.setStyleSheet(
+                        f"QPushButton {{ background:#2a3a2a; color:{_GREEN}; border:1px solid #50a050; border-radius:4px; padding:3px 8px; }}"
+                    )
+                    add_spell_btn.clicked.connect(lambda: self._add_character_spell_row(""))
+                    self._details_layout.addWidget(add_spell_btn)
+
+                    inv_title = QLabel("Inventaire")
+                    inv_title.setStyleSheet(f"color:{_TEXT_PRIMARY}; font-weight:bold; background:transparent;")
+                    self._details_layout.addWidget(inv_title)
+
+                    self._char_inventory_rows = QVBoxLayout()
+                    self._char_inventory_rows.setSpacing(4)
+                    self._details_layout.addLayout(self._char_inventory_rows)
+
+                    add_inv_btn = QPushButton("+ Ajouter item")
+                    add_inv_btn.setStyleSheet(
+                        f"QPushButton {{ background:#2a3a2a; color:{_GREEN}; border:1px solid #50a050; border-radius:4px; padding:3px 8px; }}"
+                    )
+                    add_inv_btn.clicked.connect(lambda: self._add_character_inventory_row("", 1))
+                    self._details_layout.addWidget(add_inv_btn)
+
+                    self._add_character_inventory_row("", 1)
+                    return
+
+                if self._category == "items":
+                    self._item_desc = QPlainTextEdit()
+                    self._item_desc.setPlaceholderText("Description de l'objet")
+                    self._item_desc.setFixedHeight(80)
+                    self._item_desc.setStyleSheet(
+                        f"QPlainTextEdit {{ background:#111826; color:{_TEXT_PRIMARY}; border:1px solid {_PANEL_BORDER}; border-radius:4px; }}"
+                    )
+                    self._details_layout.addWidget(self._item_desc)
+
+                    mods_title = QLabel("Modifiers")
+                    mods_title.setStyleSheet(f"color:{_TEXT_PRIMARY}; font-weight:bold; background:transparent;")
+                    self._details_layout.addWidget(mods_title)
+
+                    self._item_modifier_rows = QVBoxLayout()
+                    self._item_modifier_rows.setSpacing(4)
+                    self._details_layout.addLayout(self._item_modifier_rows)
+
+                    add_mod_btn = QPushButton("+ Ajouter modifier")
+                    add_mod_btn.setStyleSheet(
+                        f"QPushButton {{ background:#2a3a2a; color:{_GREEN}; border:1px solid #50a050; border-radius:4px; padding:3px 8px; }}"
+                    )
+                    add_mod_btn.clicked.connect(lambda: self._add_item_modifier_row("str", 0))
+                    self._details_layout.addWidget(add_mod_btn)
+
+                    self._add_item_modifier_row("str", 0)
+                    return
+
+                # spells
+                self._spell_desc = QPlainTextEdit()
+                self._spell_desc.setPlaceholderText("Description du sort")
+                self._spell_desc.setFixedHeight(80)
+                self._spell_desc.setStyleSheet(
+                    f"QPlainTextEdit {{ background:#111826; color:{_TEXT_PRIMARY}; border:1px solid {_PANEL_BORDER}; border-radius:4px; }}"
+                )
+                self._details_layout.addWidget(self._spell_desc)
+
+                spell_form = QFormLayout()
+                spell_form.setSpacing(6)
+                self._spell_cost = self._new_spin(10, 0, 999)
+                spell_form.addRow("Coût :", self._spell_cost)
+
+                self._spell_targeting = QComboBox()
+                self._spell_targeting.addItems(["single", "multi"])
+                spell_form.addRow("Targeting :", self._spell_targeting)
+
+                self._spell_runtime = QComboBox()
+                self._spell_runtime.addItems(["instant", "maintain", "refresh", "delay"])
+                spell_form.addRow("Runtime policy :", self._spell_runtime)
+
+                self._spell_delay = self._new_spin(1, 0, 999)
+                spell_form.addRow("Delay :", self._spell_delay)
+
+                self._details_layout.addLayout(spell_form)
+
+                effects_title = QLabel("Effects")
+                effects_title.setStyleSheet(f"color:{_TEXT_PRIMARY}; font-weight:bold; background:transparent;")
+                self._details_layout.addWidget(effects_title)
+
+                self._spell_effect_rows = QVBoxLayout()
+                self._spell_effect_rows.setSpacing(4)
+                self._details_layout.addLayout(self._spell_effect_rows)
+
+                add_effect_btn = QPushButton("+ Ajouter effect")
+                add_effect_btn.setStyleSheet(
+                    f"QPushButton {{ background:#2a3a2a; color:{_GREEN}; border:1px solid #50a050; border-radius:4px; padding:3px 8px; }}"
+                )
+                add_effect_btn.clicked.connect(lambda: self._add_spell_effect_row("target.hp", "malus", "10"))
+                self._details_layout.addWidget(add_effect_btn)
+
+            def _new_remove_btn(self, on_click) -> QPushButton:
+                btn = QPushButton("x")
+                btn.setFixedWidth(24)
+                btn.setStyleSheet(
+                    f"QPushButton {{ background:#3a1e1e; color:{_RED}; border:1px solid #804040; border-radius:4px; font-weight:bold; }}"
+                )
+                btn.clicked.connect(on_click)
+                return btn
+
+            def _add_character_inventory_row(self, item_name: str, qty: int) -> None:
+                row = QWidget()
+                layout = QHBoxLayout(row)
+                layout.setContentsMargins(0, 0, 0, 0)
+                layout.setSpacing(6)
+
+                name_edit = QLineEdit(str(item_name or ""))
+                name_edit.setPlaceholderText("Nom de l'item")
+                qty_spin = self._new_spin(int(qty or 1), 1, 999)
+
+                layout.addWidget(name_edit, 1)
+                layout.addWidget(QLabel("Qty"))
+                layout.addWidget(qty_spin)
+                layout.addWidget(self._new_remove_btn(lambda _=False, r=row: self._remove_row_widget(self._char_inventory_rows, r)))
+
+                row._name_edit = name_edit
+                row._qty_spin = qty_spin
+                self._char_inventory_rows.addWidget(row)
+
+            def _list_available_spells(self) -> list[str]:
+                folder = Path("assets/spells")
+                if not folder.exists():
+                    return []
+                return sorted(p.stem for p in folder.glob("*.json"))
+
+            def _add_character_spell_row(self, spell_name: str) -> None:
+                row = QWidget()
+                layout = QHBoxLayout(row)
+                layout.setContentsMargins(0, 0, 0, 0)
+                layout.setSpacing(6)
+
+                spell_combo = QComboBox()
+                spell_combo.setEditable(True)
+                spell_combo.addItems(self._list_available_spells())
+                spell_combo.setCurrentText(str(spell_name or ""))
+
+                layout.addWidget(spell_combo, 1)
+                layout.addWidget(self._new_remove_btn(lambda _=False, r=row: self._remove_row_widget(self._char_spell_rows, r, min_rows=0)))
+
+                row._spell_combo = spell_combo
+                self._char_spell_rows.addWidget(row)
+
+            def _add_item_modifier_row(self, stat_name: str, value: int) -> None:
+                row = QWidget()
+                layout = QHBoxLayout(row)
+                layout.setContentsMargins(0, 0, 0, 0)
+                layout.setSpacing(6)
+
+                stat_combo = QComboBox()
+                stat_combo.setEditable(True)
+                stat_combo.addItems(["hp", "stamina", "str", "dex", "con", "int", "wis", "cha", "per", "agi", "luc", "sur", "mental_health", "drug_health"])
+                stat_combo.setCurrentText(str(stat_name or "str"))
+                value_spin = self._new_spin(int(value or 0), -999, 999)
+
+                layout.addWidget(stat_combo, 1)
+                layout.addWidget(value_spin)
+                layout.addWidget(self._new_remove_btn(lambda _=False, r=row: self._remove_row_widget(self._item_modifier_rows, r)))
+
+                row._stat_combo = stat_combo
+                row._value_spin = value_spin
+                self._item_modifier_rows.addWidget(row)
+
+            def _add_spell_effect_row(self, target: str, operator: str, formula: str) -> None:
+                row = QWidget()
+                layout = QHBoxLayout(row)
+                layout.setContentsMargins(0, 0, 0, 0)
+                layout.setSpacing(6)
+
+                target_edit = QLineEdit(str(target or "target.hp"))
+                target_edit.setPlaceholderText("target.hp")
+
+                op_combo = QComboBox()
+                op_combo.addItems(["malus", "bonus"])
+                op_idx = op_combo.findText(str(operator or "malus"))
+                if op_idx >= 0:
+                    op_combo.setCurrentIndex(op_idx)
+
+                formula_edit = QLineEdit(str(formula or "10"))
+                formula_edit.setPlaceholderText("10")
+
+                layout.addWidget(target_edit, 2)
+                layout.addWidget(op_combo)
+                layout.addWidget(formula_edit, 2)
+                layout.addWidget(self._new_remove_btn(lambda _=False, r=row: self._remove_row_widget(self._spell_effect_rows, r, min_rows=0)))
+
+                row._target_edit = target_edit
+                row._op_combo = op_combo
+                row._formula_edit = formula_edit
+                self._spell_effect_rows.addWidget(row)
+
+            def _remove_row_widget(self, container: QVBoxLayout, row_widget: QWidget, min_rows: int = 1) -> None:
+                if container.count() <= int(min_rows):
+                    return
+                row_widget.setParent(None)
+                row_widget.deleteLater()
+
+            def _iter_rows(self, container: QVBoxLayout) -> list[QWidget]:
+                rows: list[QWidget] = []
+                for i in range(container.count()):
+                    item = container.itemAt(i)
+                    w = item.widget()
+                    if isinstance(w, QWidget):
+                        rows.append(w)
+                return rows
+
+            def file_name(self) -> str:
+                return self._sanitize_file_name(self._file_edit.text())
+
+            def load_payload(self, payload: dict) -> None:
+                name = str(payload.get("name", "")).strip()
+                if name:
+                    self._name_edit.setText(name)
+
+                if self._category == "characters":
+                    stats_modifier = payload.get("stats_modifier", {})
+                    if isinstance(stats_modifier, dict):
+                        self._char_stats_modifier_payload = {
+                            str(k): int(v or 0) for k, v in stats_modifier.items()
+                        }
+
+                    stats = payload.get("stats", {}) if isinstance(payload.get("stats", {}), dict) else {}
+                    for key, spin in self._char_stats.items():
+                        spin.setValue(int(stats.get(key, spin.value()) or spin.value()))
+
+                    spells = payload.get("spells", [])
+                    for row in self._iter_rows(self._char_spell_rows):
+                        row.setParent(None)
+                        row.deleteLater()
+                    if isinstance(spells, list):
+                        for spell_name in spells:
+                            clean_spell = str(spell_name).strip()
+                            if clean_spell:
+                                self._add_character_spell_row(clean_spell)
+
+                    for row in self._iter_rows(self._char_inventory_rows):
+                        row.setParent(None)
+                        row.deleteLater()
+                    inv_data = payload.get("inventory", [])
+                    normalized_inv: list[tuple[str, int]] = []
+                    if isinstance(inv_data, dict):
+                        for k, v in inv_data.items():
+                            normalized_inv.append((str(k), int(v or 1)))
+                    elif isinstance(inv_data, list):
+                        for pair in inv_data:
+                            if isinstance(pair, (list, tuple)) and len(pair) >= 2:
+                                normalized_inv.append((str(pair[0]), int(pair[1] or 1)))
+                    if normalized_inv:
+                        for item_name, qty in normalized_inv:
+                            self._add_character_inventory_row(item_name, qty)
+                    else:
+                        self._add_character_inventory_row("", 1)
+                    return
+
+                if self._category == "items":
+                    self._item_desc.setPlainText(str(payload.get("description", "")))
+                    mods_src = payload.get("modifier", [])
+                    normalized: list[tuple[str, int]] = []
+                    if isinstance(mods_src, list):
+                        for item in mods_src:
+                            if isinstance(item, (list, tuple)) and len(item) >= 2:
+                                normalized.append((str(item[0]), int(item[1] or 0)))
+                    stats_modifier = payload.get("stats_modifier", {})
+                    if isinstance(stats_modifier, dict):
+                        for k, v in stats_modifier.items():
+                            normalized.append((str(k), int(v or 0)))
+
+                    for row in self._iter_rows(self._item_modifier_rows):
+                        row.setParent(None)
+                        row.deleteLater()
+
+                    if normalized:
+                        for stat_name, value in normalized:
+                            self._add_item_modifier_row(stat_name, value)
+                    else:
+                        self._add_item_modifier_row("str", 0)
+                    return
+
+                self._spell_desc.setPlainText(str(payload.get("description", "")))
+                self._spell_cost.setValue(int(payload.get("cost", 10) or 10))
+
+                targeting = str(payload.get("targeting", "single") or "single")
+                idx = self._spell_targeting.findText(targeting)
+                if idx >= 0:
+                    self._spell_targeting.setCurrentIndex(idx)
+
+                runtime = str(payload.get("runtime_policy", "instant") or "instant")
+                idx = self._spell_runtime.findText(runtime)
+                if idx >= 0:
+                    self._spell_runtime.setCurrentIndex(idx)
+
+                self._spell_delay.setValue(int(payload.get("delay", 1) or 1))
+                effects = payload.get("effects", [])
+                for row in self._iter_rows(self._spell_effect_rows):
+                    row.setParent(None)
+                    row.deleteLater()
+                if isinstance(effects, list) and effects:
+                    for effect in effects:
+                        if not isinstance(effect, dict):
+                            continue
+                        self._add_spell_effect_row(
+                            str(effect.get("target", "target.hp") or "target.hp"),
+                            str(effect.get("operator", effect.get("effect", "malus")) or "malus"),
+                            str(effect.get("formula", "10") or "10"),
+                        )
+
+            def payload(self) -> dict[str, object]:
+                name = self._name_edit.text().strip() or Path(self.file_name()).stem
+                if self._category == "characters":
+                    spells: list[str] = []
+                    for row in self._iter_rows(self._char_spell_rows):
+                        spell_name = row._spell_combo.currentText().strip()
+                        if spell_name:
+                            spells.append(spell_name)
+                    stats = {k: int(spin.value()) for k, spin in self._char_stats.items()}
+
+                    inventory: list[list[object]] = []
+                    for row in self._iter_rows(self._char_inventory_rows):
+                        item_name = row._name_edit.text().strip()
+                        qty = int(row._qty_spin.value())
+                        if item_name:
+                            inventory.append([item_name, qty])
+
+                    return {
+                        "name": name,
+                        "stats": stats,
+                        "stats_modifier": dict(self._char_stats_modifier_payload),
+                        "inventory": inventory,
+                        "spells": spells,
+                    }
+                if self._category == "items":
+                    mods: list[list[object]] = []
+                    for row in self._iter_rows(self._item_modifier_rows):
+                        stat_name = row._stat_combo.currentText().strip()
+                        value = int(row._value_spin.value())
+                        if stat_name and value != 0:
+                            mods.append([stat_name, value])
+                    return {
+                        "name": name,
+                        "description": self._item_desc.toPlainText().strip(),
+                        "modifier": mods,
+                    }
+
+                effects: list[dict[str, object]] = []
+                for row in self._iter_rows(self._spell_effect_rows):
+                    target = row._target_edit.text().strip() or "target.hp"
+                    operator = row._op_combo.currentText().strip() or "malus"
+                    formula = row._formula_edit.text().strip() or "10"
+                    effects.append({"target": target, "operator": operator, "formula": formula})
+
+                return {
+                    "name": name,
+                    "cost": int(self._spell_cost.value()),
+                    "description": self._spell_desc.toPlainText().strip(),
+                    "targeting": self._spell_targeting.currentText().strip() or "single",
+                    "runtime_policy": self._spell_runtime.currentText().strip() or "instant",
+                    "delay": int(self._spell_delay.value()),
+                    "effects": effects,
+                }
+
+            def accept(self) -> None:
+                if not self.file_name().strip():
+                    QMessageBox.warning(self, "Nouvelle ressource", "Nom de fichier invalide.")
+                    return
+                if not (self._name_edit.text().strip() or Path(self.file_name()).stem):
+                    QMessageBox.warning(self, "Nouvelle ressource", "Nom de ressource invalide.")
+                    return
+                super().accept()
         
         def _build_ui(self) -> None:
             root = QVBoxLayout(self)
@@ -992,6 +1530,30 @@ class _CentralArea(QWidget):
             self._path_lbl = QLabel("Aucune ressource sélectionnée")
             self._path_lbl.setStyleSheet(f"color:{_TEXT_SEC}; font-size:10px; background:transparent;")
             right_col.addWidget(self._path_lbl)
+
+            self._preview_frame = QFrame()
+            self._preview_frame.setStyleSheet(
+                f"QFrame {{ background:#182030; border:1px solid {_PANEL_BORDER}; border-radius:4px; }}"
+            )
+            preview_root = QVBoxLayout(self._preview_frame)
+            preview_root.setContentsMargins(8, 8, 8, 8)
+            preview_root.setSpacing(6)
+
+            preview_title = QLabel("Preview")
+            preview_title.setStyleSheet(f"color:{_TEXT_PRIMARY}; font-size:10px; font-weight:bold; background:transparent;")
+            preview_root.addWidget(preview_title)
+
+            self._preview_scroll = QScrollArea()
+            self._preview_scroll.setWidgetResizable(True)
+            self._preview_scroll.setStyleSheet("QScrollArea { border:none; background:transparent; }")
+            self._preview_host = QWidget()
+            self._preview_host.setStyleSheet("background:transparent;")
+            self._preview_layout = QVBoxLayout(self._preview_host)
+            self._preview_layout.setContentsMargins(0, 0, 0, 0)
+            self._preview_layout.setSpacing(0)
+            self._preview_scroll.setWidget(self._preview_host)
+            preview_root.addWidget(self._preview_scroll)
+            right_col.addWidget(self._preview_frame, 1)
         
             self._editor = QPlainTextEdit()
             self._editor.setPlaceholderText("Sélectionne une ressource pour l'éditer…")
@@ -1002,7 +1564,7 @@ class _CentralArea(QWidget):
                     selection-background-color:{_ACCENT};
                 }}
             """)
-            right_col.addWidget(self._editor, 1)
+            right_col.addWidget(self._editor, 2)
         
             right_btns = QHBoxLayout()
             right_btns.setSpacing(6)
@@ -1017,6 +1579,17 @@ class _CentralArea(QWidget):
             """)
             format_btn.clicked.connect(self._on_format_json)
             right_btns.addWidget(format_btn)
+
+            edit_form_btn = QPushButton("Éditer (formulaire)")
+            edit_form_btn.setStyleSheet(f"""
+                QPushButton {{
+                    background:#2a2a3f; color:{_YELLOW}; border:1px solid #807050;
+                    border-radius:4px; font-size:10px; font-weight:bold; padding:4px 8px;
+                }}
+                QPushButton:hover {{ background:#3a3a4f; }}
+            """)
+            edit_form_btn.clicked.connect(self._on_edit_resource)
+            right_btns.addWidget(edit_form_btn)
         
             right_btns.addStretch()
         
@@ -1035,12 +1608,109 @@ class _CentralArea(QWidget):
             body.addLayout(right_col, 1)
         
             root.addLayout(body, 1)
+
+            self._set_preview_widget(QLabel("Aperçu indisponible."))
         
         def _current_category(self) -> str:
             return self._category_combo.currentText().strip()
         
         def _current_dir(self) -> Path:
             return self._category_to_dir.get(self._current_category(), Path("assets"))
+
+        def _set_preview_widget(self, widget: QWidget) -> None:
+            while self._preview_layout.count():
+                item = self._preview_layout.takeAt(0)
+                if (w := item.widget()) is not None:
+                    w.deleteLater()
+            widget.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+            self._preview_layout.addWidget(widget)
+            self._preview_layout.addStretch(1)
+
+        def _spell_from_data(self, data: dict) -> Spell | None:
+            try:
+                effects: list[Effect] = []
+                for row in data.get("effects", []):
+                    if not isinstance(row, dict):
+                        continue
+                    target = str(row.get("target", "")).strip()
+                    if "." not in target:
+                        continue
+                    scope, stat = target.split(".", 1)
+                    operator = str(row.get("operator", row.get("effect", "malus"))).strip().lower()
+                    if operator not in {"bonus", "malus"}:
+                        operator = "malus"
+                    formula = Formula(str(row.get("formula", "0") or "0"))
+                    formula.compilate()
+                    effects.append(Effect(target=(scope, stat), operator=operator, formula=formula))
+
+                targeting = str(data.get("targeting", "single") or "single")
+                if targeting not in {"single", "multi"}:
+                    targeting = "single"
+
+                runtime = str(data.get("runtime_policy", "instant") or "instant")
+                if runtime not in {"instant", "maintain", "refresh", "delay"}:
+                    runtime = "instant"
+
+                return Spell(
+                    name=str(data.get("name", "Spell") or "Spell"),
+                    description=str(data.get("description", "") or ""),
+                    cost=int(data.get("cost", 0) or 0),
+                    targeting=targeting,
+                    runtime_policy=runtime,
+                    effects=effects,
+                    delay=data.get("delay", float("inf")),
+                )
+            except Exception:
+                return None
+
+        def _refresh_preview_from_data(self, category: str, data: dict) -> None:
+            category = str(category).strip()
+            if not isinstance(data, dict):
+                self._set_preview_widget(QLabel("Aperçu indisponible (données invalides)."))
+                return
+
+            if category == "characters":
+                try:
+                    card = CharacterCard(Character.from_dict(data))
+                    self._set_preview_widget(card)
+                    return
+                except Exception:
+                    self._set_preview_widget(QLabel("Aperçu personnage indisponible."))
+                    return
+
+            if category == "items":
+                try:
+                    if "modifier" not in data and isinstance(data.get("stats_modifier", {}), dict):
+                        data = dict(data)
+                        data["modifier"] = [
+                            [k, int(v)] for k, v in data.get("stats_modifier", {}).items() if int(v or 0) != 0
+                        ]
+                    item = Item.from_blueprint(data)
+                    card = ItemCard(item=item, item_name=item.name, quantity=1, allow_quantity_edit=False)
+                    self._set_preview_widget(card)
+                    return
+                except Exception:
+                    self._set_preview_widget(QLabel("Aperçu item indisponible."))
+                    return
+
+            if category == "spells":
+                spell = self._spell_from_data(data)
+                if spell is not None:
+                    self._set_preview_widget(SpellCard(spell=spell, spell_key=spell.name, enable_cast=False))
+                else:
+                    self._set_preview_widget(QLabel("Aperçu sort indisponible."))
+                return
+
+            self._set_preview_widget(QLabel("Aperçu indisponible."))
+
+        def _refresh_preview_from_editor(self) -> None:
+            raw = self._editor.toPlainText()
+            try:
+                data = json.loads(raw)
+            except Exception:
+                self._set_preview_widget(QLabel("Aperçu indisponible (JSON invalide)."))
+                return
+            self._refresh_preview_from_data(self._current_category(), data)
         
         def _refresh_list(self) -> None:
             folder = self._current_dir()
@@ -1051,6 +1721,7 @@ class _CentralArea(QWidget):
             self._current_file = None
             self._path_lbl.setText(f"Dossier: {folder}")
             self._editor.clear()
+            self._set_preview_widget(QLabel("Aucune ressource sélectionnée."))
         
         def _on_resource_selected(self, file_name: str) -> None:
             if not file_name:
@@ -1067,6 +1738,7 @@ class _CentralArea(QWidget):
                 QMessageBox.critical(self, "Lecture ressource", f"Impossible de lire le fichier:\n{exc}")
                 return
             self._editor.setPlainText(content)
+            self._refresh_preview_from_editor()
         
         def _default_payload(self, category: str, name: str) -> dict[str, object]:
             if category == "characters":
@@ -1107,27 +1779,18 @@ class _CentralArea(QWidget):
         
         def _on_add_resource(self) -> None:
             category = self._current_category()
-            file_name, ok = QInputDialog.getText(
-                self,
-                "Nouvelle ressource",
-                f"Nom du fichier JSON ({category})",
-                text="nouvelle_ressource",
-            )
-            if not ok:
+            dialog = self._AssetCreationDialog(category, self, mode="create")
+            if dialog.exec() != QDialog.DialogCode.Accepted:
                 return
-            clean = str(file_name).strip()
-            if not clean:
-                QMessageBox.warning(self, "Nouvelle ressource", "Nom vide.")
-                return
-            if not clean.endswith(".json"):
-                clean += ".json"
+
+            clean = dialog.file_name()
+            payload = dialog.payload()
         
             path = self._current_dir() / clean
             if path.exists():
                 QMessageBox.warning(self, "Nouvelle ressource", "Ce fichier existe déjà.")
                 return
-        
-            payload = self._default_payload(category, path.stem)
+
             try:
                 path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
             except Exception as exc:
@@ -1136,6 +1799,51 @@ class _CentralArea(QWidget):
         
             self._refresh_list()
             matches = self._resource_list.findItems(clean, Qt.MatchFlag.MatchExactly)
+            if matches:
+                self._resource_list.setCurrentItem(matches[0])
+            self.resources_changed.emit(category)
+
+        def _on_edit_resource(self) -> None:
+            if self._current_file is None:
+                QMessageBox.warning(self, "Édition", "Aucune ressource sélectionnée.")
+                return
+
+            raw = self._editor.toPlainText()
+            try:
+                payload = json.loads(raw)
+            except Exception as exc:
+                QMessageBox.warning(self, "Édition", f"JSON invalide:\n{exc}")
+                return
+
+            category = self._current_category()
+            dialog = self._AssetCreationDialog(
+                category,
+                self,
+                mode="edit",
+                file_name=self._current_file.name,
+                initial_payload=payload,
+            )
+            if dialog.exec() != QDialog.DialogCode.Accepted:
+                return
+
+            new_file_name = dialog.file_name()
+            new_payload = dialog.payload()
+            target_path = self._current_dir() / new_file_name
+
+            if target_path != self._current_file and target_path.exists():
+                QMessageBox.warning(self, "Édition", "Un fichier avec ce nom existe déjà.")
+                return
+
+            try:
+                if target_path != self._current_file:
+                    self._current_file.unlink(missing_ok=True)
+                target_path.write_text(json.dumps(new_payload, ensure_ascii=False, indent=2), encoding="utf-8")
+            except Exception as exc:
+                QMessageBox.critical(self, "Édition", f"Impossible d'enregistrer la ressource:\n{exc}")
+                return
+
+            self._refresh_list()
+            matches = self._resource_list.findItems(new_file_name, Qt.MatchFlag.MatchExactly)
             if matches:
                 self._resource_list.setCurrentItem(matches[0])
             self.resources_changed.emit(category)
@@ -1175,6 +1883,7 @@ class _CentralArea(QWidget):
                 QMessageBox.warning(self, "Format JSON", f"JSON invalide:\n{exc}")
                 return
             self._editor.setPlainText(json.dumps(data, ensure_ascii=False, indent=2))
+            self._refresh_preview_from_data(self._current_category(), data)
         
         def _on_save_resource(self) -> None:
             if self._current_file is None:
@@ -1195,6 +1904,7 @@ class _CentralArea(QWidget):
                 return
         
             QMessageBox.information(self, "Enregistrement", "Ressource enregistrée.")
+            self._refresh_preview_from_data(self._current_category(), data)
             self.resources_changed.emit(self._current_category())
 
     class _CombatTab(QWidget):
@@ -1759,6 +2469,17 @@ class _CentralArea(QWidget):
         add_btn.clicked.connect(self._on_add)
         lay.addWidget(add_btn)
 
+        remove_btn = QPushButton("- Décharger")
+        remove_btn.setStyleSheet(f"""
+            QPushButton {{
+                background:#3a2a2a; color:{_RED}; border:1px solid #a05050;
+                border-radius:4px; font-size:11px; font-weight:bold; padding:4px 10px;
+            }}
+            QPushButton:hover {{ background:#4a3a3a; }}
+        """)
+        remove_btn.clicked.connect(self._on_remove)
+        lay.addWidget(remove_btn)
+
         cast_btn = QPushButton("Lancer sort (MJ)")
         cast_btn.setStyleSheet(f"""
             QPushButton {{
@@ -1787,10 +2508,25 @@ class _CentralArea(QWidget):
         if char_name:
             self.add_entity_requested.emit(char_name)
 
+    def _on_remove(self) -> None:
+        if not self._cards:
+            return
+        names = sorted(self._cards.keys())
+        entity_name, ok = QInputDialog.getItem(
+            self,
+            "Décharger une entité",
+            "Choisir l'entité à décharger :",
+            names,
+            editable=False,
+        )
+        if ok and entity_name:
+            self.remove_entity_requested.emit(str(entity_name))
+
     def add_card(self, entity: Entity) -> None:
         if entity.name in self._cards:
             return
         card = EntityCard(entity, gm_mode=True, show_cast_buttons=True)
+        card.unload_requested.connect(self.remove_entity_requested.emit)
         # Insert before the trailing stretch
         self._cards_layout.insertWidget(self._cards_layout.count() - 1, card)
         self._cards[entity.name] = card
@@ -2747,6 +3483,7 @@ class MJWindow(QMainWindow):
         self._left.srv_btn.clicked.connect(self._on_server_toggle)
         self._left.send_chat_requested.connect(self._on_mj_chat)
         self._central.add_entity_requested.connect(self._on_add_entity)
+        self._central.remove_entity_requested.connect(self._on_remove_entity)
         self._central.manual_spell_requested.connect(self._on_manual_spell_cast)
         self._central.sync_assets_requested.connect(self._on_sync_assets_requested)
         self._central.combat_updated.connect(self._on_combat_updated)
@@ -2828,18 +3565,20 @@ class MJWindow(QMainWindow):
             public_endpoint=self._public_share_endpoint,
         )
 
-    def _on_auto_load_entity(self, entity_name: str) -> None:
+    def _on_auto_load_entity(self, entity_name: str, character_name: str) -> None:
         """Auto-charge une entité quand un joueur s'y connecte."""
         entity_name = str(entity_name).strip()
+        character_name = str(character_name).strip()
         if not entity_name or entity_name in self._entities:
             return
         
-        # Essayer de charger l'entité
-        char = Character.from_name(entity_name)
+        # Essayer de charger le personnage source
+        source_character = character_name or entity_name
+        char = Character.from_name(source_character)
         if char is None:
             self._left.append_chat(
                 "Système",
-                f"⚠️ Impossible de charger l'entité « {entity_name} ».",
+                f"⚠️ Impossible de charger l'entité « {entity_name} » (personnage: {source_character}).",
                 color=_RED
             )
             return
@@ -2850,7 +3589,7 @@ class MJWindow(QMainWindow):
         self._central.add_card(entity)
         self._left.append_chat(
             "Système",
-            f"✓ Entité « {entity_name} » chargée automatiquement.",
+            f"✓ Entité « {entity_name} » chargée automatiquement (personnage: {source_character}).",
             color=_GREEN
         )
 
@@ -3167,22 +3906,90 @@ class MJWindow(QMainWindow):
 
     # ── Entities ──────────────────────────────────────────────────────────────
 
+    def _unique_entity_name(self, base_name: str) -> str:
+        """Retourne un nom d'entité disponible (suffixé si nécessaire)."""
+        candidate = str(base_name).strip() or "Entité"
+        if candidate not in self._entities:
+            return candidate
+        n = 2
+        while f"{candidate} ({n})" in self._entities:
+            n += 1
+        return f"{candidate} ({n})"
+
     def _on_add_entity(self, char_name: str) -> None:
+        char_name = str(char_name).strip()
+        if not char_name:
+            return
+
         char = Character.from_name(char_name)
         if char is None:
             QMessageBox.warning(self, "Introuvable", f"Personnage « {char_name} » introuvable.")
             return
 
-        # Nom unique si déjà présent
-        entity_name = char_name
-        n = 2
-        while entity_name in self._entities:
-            entity_name = f"{char_name} ({n})"
-            n += 1
+        proposed_name = self._unique_entity_name(char_name)
+        entity_name, ok = QInputDialog.getText(
+            self,
+            "Nom de l'entité",
+            "Tu peux renommer l'entité avant chargement :",
+            text=proposed_name,
+        )
+        if not ok:
+            return
+
+        entity_name = self._unique_entity_name(entity_name)
 
         entity = Entity(name=entity_name, character=char)
         self._entities[entity_name] = entity
         self._central.add_card(entity)
+
+    def _on_remove_entity(self, entity_name: str) -> None:
+        entity_name = str(entity_name).strip()
+        if not entity_name:
+            return
+        if entity_name not in self._entities:
+            QMessageBox.warning(self, "Introuvable", f"Entité « {entity_name} » introuvable.")
+            return
+
+        confirm = QMessageBox.question(
+            self,
+            "Décharger l'entité",
+            (
+                f"Décharger l'entité « {entity_name} » ?\n\n"
+                "Si un joueur est lié à cette entité, il sera déconnecté."
+            ),
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+            QMessageBox.StandardButton.No,
+        )
+        if confirm != QMessageBox.StandardButton.Yes:
+            return
+
+        disconnected: list[str] = []
+        if self._server_worker and self._server_worker.isRunning():
+            disconnected = self._server_worker.disconnect_clients_bound_to_entity(entity_name)
+
+        self._entities.pop(entity_name, None)
+        self._central.remove_card(entity_name)
+        self._pending_damage_rolls = {
+            req_id: payload
+            for req_id, payload in self._pending_damage_rolls.items()
+            if str(payload.get("attacker", "")) != entity_name
+            and str(payload.get("target", "")) != entity_name
+        }
+        self._sync_entities_to_players()
+
+        if disconnected:
+            names = ", ".join(disconnected)
+            self._left.append_chat(
+                "Système",
+                f"Entité « {entity_name} » déchargée. Joueur(s) déconnecté(s): {names}",
+                color=_YELLOW,
+            )
+        else:
+            self._left.append_chat(
+                "Système",
+                f"Entité « {entity_name} » déchargée.",
+                color=_YELLOW,
+            )
 
     def closeEvent(self, event) -> None:
         if self._server_worker and self._server_worker.isRunning():

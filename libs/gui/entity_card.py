@@ -1,19 +1,21 @@
 # -*- coding: utf-8 -*-
 """
-EntityCard — carte miniature d'une entité (PJ, PNJ, boss).
+EntityCard - carte miniature d'une entite (PJ, PNJ, boss).
 
-Affiche de façon compacte :
+Affiche de facon compacte :
   - Nom + badge Niveau (+ badge MJ si gm_mode)
   - Barres vitales : PV et Stamina
   - Badges des 5 stats de combat principales
 
-Double-clic → ouvre la fiche complète (EntitySheet) dans un QDialog modale.
+Double-clic -> ouvre la fiche complete (EntitySheet) dans un QDialog modale.
 
 Signals :
   - double_clicked()
-      Émis juste avant l'ouverture de la fiche complète.
+      Emis juste avant l'ouverture de la fiche complete.
   - sheet_closed()
-      Émis quand la fiche est fermée (la carte se rafraîchit automatiquement).
+      Emis quand la fiche est fermee (la carte se rafraichit automatiquement).
+  - unload_requested(entity_name)
+      Emis quand le bouton de dechargement est clique (mode MJ).
 """
 
 from __future__ import annotations
@@ -25,6 +27,7 @@ from PyQt6.QtWidgets import (
     QFrame,
     QHBoxLayout,
     QLabel,
+    QPushButton,
     QSizePolicy,
     QVBoxLayout,
     QWidget,
@@ -34,19 +37,19 @@ from ..character import Entity
 from .entity_sheet import EntitySheet, _breakdown
 
 
-# ── Palette (cohérente avec entity_sheet) ─────────────────────────────────────
+# -- Palette (coherente avec entity_sheet) ------------------------------------
 
-_CARD_BG        = "#1e1e2e"
-_CARD_BORDER    = "#45475a"
-_CARD_HOVER     = "#8060c0"
-_HEADER_BG      = "#282838"
-_HEADER_BORDER  = "#585878"
-_SECTION_BG     = "#23233a"
-_TEXT_PRIMARY   = "#cdd6f4"
+_CARD_BG = "#1e1e2e"
+_CARD_BORDER = "#45475a"
+_CARD_HOVER = "#8060c0"
+_HEADER_BG = "#282838"
+_HEADER_BORDER = "#585878"
+_SECTION_BG = "#23233a"
+_TEXT_PRIMARY = "#cdd6f4"
 _TEXT_SECONDARY = "#9399b2"
-_BAR_BG         = "#313244"
-_BAR_HP         = "#f38ba8"
-_BAR_STA        = "#fab387"
+_BAR_BG = "#313244"
+_BAR_HP = "#f38ba8"
+_BAR_STA = "#fab387"
 
 _CARD_STYLE = f"""
     EntityCard {{
@@ -68,15 +71,16 @@ _KEY_STATS = [
 ]
 
 
-# ── EntityCard ────────────────────────────────────────────────────────────────
+# -- EntityCard ----------------------------------------------------------------
 
 class EntityCard(QFrame):
     """
-    Carte miniature pour une entité. Double-clic → fiche complète.
+    Carte miniature pour une entite. Double-clic -> fiche complete.
     """
 
     double_clicked = pyqtSignal()
-    sheet_closed   = pyqtSignal()
+    sheet_closed = pyqtSignal()
+    unload_requested = pyqtSignal(str)
 
     def __init__(
         self,
@@ -98,7 +102,7 @@ class EntityCard(QFrame):
 
         self._build_ui()
 
-    # ── Construction ──────────────────────────────────────────────────────────
+    # -- Construction ----------------------------------------------------------
 
     def _build_ui(self) -> None:
         existing = self.layout()
@@ -119,7 +123,8 @@ class EntityCard(QFrame):
 
     def _make_header(self) -> QWidget:
         header = QFrame()
-        header.setStyleSheet(f"""
+        header.setStyleSheet(
+            f"""
             QFrame {{
                 background: {_HEADER_BG};
                 border: none;
@@ -127,7 +132,8 @@ class EntityCard(QFrame):
                 border-top-left-radius: 8px;
                 border-top-right-radius: 8px;
             }}
-        """)
+            """
+        )
         layout = QHBoxLayout(header)
         layout.setContentsMargins(10, 8, 10, 8)
         layout.setSpacing(6)
@@ -160,6 +166,23 @@ class EntityCard(QFrame):
             )
             layout.addWidget(gm_badge)
 
+            unload_btn = QPushButton("x")
+            unload_btn.setFixedSize(18, 18)
+            unload_btn.setToolTip("Decharger cette entite")
+            unload_btn.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+            unload_btn.setStyleSheet(
+                "QPushButton {"
+                "background:#3a2a2a; border:1px solid #a05050; border-radius:4px;"
+                "color:#f38ba8; font-weight:bold; font-size:10px;"
+                "padding:0px;"
+                "}"
+                "QPushButton:hover { background:#4a3a3a; }"
+            )
+            unload_btn.clicked.connect(
+                lambda _=False: self.unload_requested.emit(str(self.entity.name))
+            )
+            layout.addWidget(unload_btn)
+
         return header
 
     def _make_vitals_widget(self) -> QWidget:
@@ -172,7 +195,7 @@ class EntityCard(QFrame):
         layout.setSpacing(5)
 
         for stat_key, label, bar_color in [
-            ("hp",      "PV",  _BAR_HP),
+            ("hp", "PV", _BAR_HP),
             ("stamina", "STA", _BAR_STA),
         ]:
             base, mj_mod, item_mod, spell_mod = _breakdown(self.entity, stat_key)
@@ -186,7 +209,9 @@ class EntityCard(QFrame):
 
             lbl = QLabel(label)
             lbl.setFixedWidth(26)
-            lbl.setStyleSheet(f"color:{_TEXT_SECONDARY}; font-size:9px; background:transparent;")
+            lbl.setStyleSheet(
+                f"color:{_TEXT_SECONDARY}; font-size:9px; background:transparent;"
+            )
             row.addWidget(lbl)
 
             bar_bg = QFrame()
@@ -220,7 +245,7 @@ class EntityCard(QFrame):
         return container
 
     def _make_key_stats_widget(self) -> QWidget:
-        """Rangée de 5 badges compacts (FOR/DEX/CON/INT/SAG)."""
+        """Rangee de 5 badges compacts (FOR/DEX/CON/INT/SAG)."""
         container = QFrame()
         container.setStyleSheet(f"QFrame {{ background:{_CARD_BG}; border:none; }}")
         layout = QHBoxLayout(container)
@@ -232,10 +257,10 @@ class EntityCard(QFrame):
             total = base + mj_mod + item_mod + spell_mod
 
             if total > base:
-                val_color = "#a6e3a1"   # vert — buffé
+                val_color = "#a6e3a1"
                 border_col = "#40a06a"
             elif total < base:
-                val_color = "#f38ba8"   # rouge — débuffé
+                val_color = "#f38ba8"
                 border_col = "#e06060"
             else:
                 val_color = _TEXT_PRIMARY
@@ -269,7 +294,7 @@ class EntityCard(QFrame):
 
         return container
 
-    # ── Évènements ──────────────────────────────────────────────────────────
+    # -- Evenements ------------------------------------------------------------
 
     def mouseDoubleClickEvent(self, event) -> None:
         self.double_clicked.emit()
@@ -280,22 +305,21 @@ class EntityCard(QFrame):
             parent=self,
         )
         dialog.exec()
-        # Rafraîchit la carte une fois la fiche fermée
         self._build_ui()
         self.sheet_closed.emit()
         super().mouseDoubleClickEvent(event)
 
-    # ── API publique ─────────────────────────────────────────────────────────
+    # -- API publique ----------------------------------------------------------
 
     def refresh(self) -> None:
-        """Reconstruit la carte (ex. après un changement d'état extérieur)."""
+        """Reconstruit la carte (ex. apres un changement d'etat exterieur)."""
         self._build_ui()
 
 
-# ── Dialog fiche complète ─────────────────────────────────────────────────────
+# -- Dialog fiche complete -----------------------------------------------------
 
 class _EntitySheetDialog(QDialog):
-    """Boîte de dialogue modale qui embarque une EntitySheet complète."""
+    """Boite de dialogue modale qui embarque une EntitySheet complete."""
 
     def __init__(
         self,
@@ -320,6 +344,6 @@ class _EntitySheetDialog(QDialog):
             gm_mode=gm_mode,
         )
         self._sheet.cast_requested.connect(
-            lambda key: print(f"[EntityCard] cast_requested → {key}")
+            lambda key: print(f"[EntityCard] cast_requested -> {key}")
         )
         layout.addWidget(self._sheet)

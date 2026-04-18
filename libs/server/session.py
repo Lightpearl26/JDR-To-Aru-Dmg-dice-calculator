@@ -56,6 +56,7 @@ class ClientSession:
         # session data
         self.chat_log: list[ChatMessage] = []
         self.bound_entity: str | None = None
+        self.bound_character: str | None = None
 
     async def send_message(self, message: NetworkMessage) -> None:
         """

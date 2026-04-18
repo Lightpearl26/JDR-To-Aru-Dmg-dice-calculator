@@ -89,14 +89,22 @@ async def handle_auth(
     if character_name:
         character_name = str(character_name).strip()
         if character_name:
-            session.bound_entity = character_name
+            session.bound_entity = username
+            session.bound_character = character_name
             await server.send_message(
                 writer,
-                CommandMessage("AUTH_OK", {"username": username, "entity_name": character_name})
+                CommandMessage(
+                    "AUTH_OK",
+                    {
+                        "username": username,
+                        "entity_name": username,
+                        "character_name": character_name,
+                    },
+                )
             )
             print(
                 f"[auth] accepted username={username!r} peer={client_infos} "
-                f"entity={character_name!r} active_clients={len(server.connected_clients)}"
+                f"entity={username!r} character={character_name!r} active_clients={len(server.connected_clients)}"
             )
             return True
     
@@ -127,6 +135,7 @@ async def handle_register_entity(server, session, entity_name: str) -> None:
         return
 
     session.bound_entity = entity_name
+    session.bound_character = entity_name
     await session.send_message(
         CommandMessage("REGISTERED_ENTITY", {"entity_name": entity_name})
     )
